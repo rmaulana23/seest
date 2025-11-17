@@ -1,8 +1,9 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { PrivateMessage } from '../types';
 import { CURRENT_USER_ID } from '../constants';
 
-const MESSAGES_STORAGE_KEY = 'seest_messages_v1';
+const MESSAGES_STORAGE_KEY = 'seest_messages_v2';
 
 export const usePrivateMessages = () => {
   const [messages, setMessages] = useState<PrivateMessage[]>([]);

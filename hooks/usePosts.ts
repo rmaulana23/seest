@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { Post, Activity, Reply, PostComment } from '../types';
 import { POSTS_STORAGE_KEY, TTL_MS, SAMPLE_POSTS } from '../constants';
@@ -22,13 +23,13 @@ export const usePosts = (bookmarkedIds: number[]) => {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(POSTS_STORAGE_KEY);
+      // SAMPLE_POSTS is now empty, ensuring a clean start if storage is empty
       const parsed = raw ? JSON.parse(raw) : SAMPLE_POSTS;
       const fresh = cleanAndSave(parsed);
       setPosts(fresh);
     } catch (error) {
       console.error("Failed to load posts from storage", error);
-      const fresh = cleanAndSave(SAMPLE_POSTS);
-      setPosts(fresh);
+      setPosts([]);
     }
     setIsLoading(false);
   }, [cleanAndSave]);

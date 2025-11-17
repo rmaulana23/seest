@@ -66,6 +66,43 @@ export const useUsers = () => {
     }
   }, []);
 
+  // Failsafe: Ensure profile exists if auth exists
+  useEffect(() => {
+    const ensureProfile = async () => {
+        if (currentAuthId && !isLoading) {
+            // Check if we have the user in our loaded list
+            const found = users.find(u => u.id === currentAuthId);
+            
+            if (!found) {
+                console.log("Profile missing for auth user, attempting recovery...");
+                // Profile missing! Create it manually if trigger failed
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    const newProfile = {
+                        id: user.id,
+                        email: user.email,
+                        name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+                        avatar: user.user_metadata?.avatar || user.email?.charAt(0).toUpperCase() || 'U',
+                        bio: '',
+                        current_activity: 'Relaxing',
+                        last_seen: new Date().toISOString()
+                    };
+                    
+                    const { error } = await supabase.from('profiles').upsert(newProfile);
+                    if (!error) {
+                        console.log("Profile recovered successfully.");
+                        fetchData(); // Refresh data
+                    } else {
+                        console.error("Failed to recover profile:", error);
+                    }
+                }
+            }
+        }
+    };
+    
+    ensureProfile();
+  }, [currentAuthId, users, isLoading, fetchData]);
+
   useEffect(() => {
     fetchData();
     
@@ -83,7 +120,6 @@ export const useUsers = () => {
 
   const addUser = useCallback((newUser: User) => {
       // Logic handled by Supabase Auth Trigger (public.handle_new_user)
-      // This function is kept for compatibility with existing interface but doesn't need to manually insert into profiles
       console.log("User registration handled by Supabase Auth", newUser);
   }, []);
 
@@ -91,7 +127,6 @@ export const useUsers = () => {
      if(!currentAuthId) return;
      try {
          await supabase.from('follows').insert({ follower_id: currentAuthId, following_id: targetId });
-         // Realtime sub will update state
      } catch(e) { console.error(e); }
   }, [currentAuthId]);
 
@@ -107,16 +142,14 @@ export const useUsers = () => {
     try {
         await supabase.from('profiles').update({ 
             bio: updates.bio.slice(0, 160),
-            current_activity: updates.currentActivity
+            current_activity: updates.currentActivity,
+            last_seen: new Date().toISOString()
         }).eq('id', userId);
     } catch(e) { console.error(e); }
   }, [currentAuthId]);
   
   const toggleFavorite = useCallback(async (userId: string, postId: number) => {
      if(userId !== currentAuthId) return;
-     // Check if exists first
-     // Since we don't have the full list here easily without lookup, let's try insert, if fail (unique violation) then delete?
-     // Or better: check the local state `users`.
      const currentUser = users.find(u => u.id === userId);
      const isFavorited = currentUser?.favoritePostIds?.includes(postId);
 

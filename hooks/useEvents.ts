@@ -1,8 +1,9 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { Event, EventMessage, Comment } from '../types';
 import { CURRENT_USER_ID } from '../constants';
 
-const EVENTS_STORAGE_KEY = 'seest_events_v1';
+const EVENTS_STORAGE_KEY = 'seest_events_v2';
 
 const getEventsFromStorage = (): Event[] => {
     try {
