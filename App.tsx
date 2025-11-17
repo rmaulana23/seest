@@ -140,25 +140,6 @@ export default function App() {
   const handleLogout = async () => {
       await supabase.auth.signOut();
   };
-  
-  // --- Simulation for Notifications ---
-  useEffect(() => {
-      // If there are no notifications, generate some "new mutual activity" to demo the yellow dot
-      if (isAuthenticated && notifications.length === 0) {
-          const demoNotifs = [
-              { userId: 'user-rina', type: 'comment' as const, text: 'commented on your story.' },
-              { userId: 'user-dimas', type: 'like' as const, text: 'liked your story.' },
-              { userId: 'user-mila', type: 'follow' as const, text: 'started following you.' }
-          ];
-          
-          // Add them one by one with slight delay to simulate fetch
-          demoNotifs.forEach((n, i) => {
-              setTimeout(() => {
-                  addNotification(n);
-              }, i * 500);
-          });
-      }
-  }, [isAuthenticated, notifications.length, addNotification]);
 
   // --- App Logic ---
 
