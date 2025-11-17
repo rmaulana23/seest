@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User } from '../types';
@@ -189,24 +190,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
               className="flex flex-col items-center text-center"
             >
               <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-2 drop-shadow-lg">SEEST</h1>
-              <p className="text-lg font-light mb-8 tracking-widest uppercase opacity-90">Ephemeral Status</p>
+              <p className="text-lg font-light mb-8 tracking-widest uppercase opacity-90">{t('landing.hero.subtitle')}</p>
               
               <div className="w-full space-y-3">
                 <button 
                   onClick={() => setView('login')}
                   className="w-full py-3 bg-white text-brand-600 text-lg font-bold rounded-full hover:bg-gray-100 transition-transform active:scale-95 shadow-lg"
                 >
-                  MASUK
+                  {t('landing.button.login')}
                 </button>
                 <button 
                   onClick={() => setView('register')}
                   className="w-full py-3 bg-transparent border-2 border-white text-white text-lg font-bold rounded-full hover:bg-white/10 transition-transform active:scale-95"
                 >
-                  DAFTAR
+                  {t('landing.button.register')}
                 </button>
               </div>
               <div className="mt-8 text-[10px] opacity-50">
-                  <p>Versi 1.0.0 &bull; 2025</p>
+                  <p>{t('landing.footer.version')}</p>
               </div>
             </motion.div>
           )}
@@ -220,32 +221,32 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
               className="w-full"
             >
               <button onClick={() => { setView('landing'); setError(''); }} className="mb-4 flex items-center gap-2 text-xs font-semibold hover:opacity-80">
-                <ArrowLeft size={16} /> KEMBALI
+                <ArrowLeft size={16} /> {t('landing.button.back')}
               </button>
               
-              <h2 className="text-2xl font-bold mb-1">Selamat Datang</h2>
-              <p className="text-white/70 mb-6 text-xs">Masuk untuk melihat cerita temanmu.</p>
+              <h2 className="text-2xl font-bold mb-1">{t('landing.login.title')}</h2>
+              <p className="text-white/70 mb-6 text-xs">{t('landing.login.subtitle')}</p>
 
               <form onSubmit={handleLogin} className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">Email</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">{t('landing.label.email')}</label>
                   <input 
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="nama@email.com"
+                    placeholder={t('landing.placeholder.email')}
                     className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">Password</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">{t('landing.label.password')}</label>
                   <div className="relative">
                     <input 
                       type={showPassword ? "text" : "password"} 
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Password Anda"
+                      placeholder={t('landing.placeholder.password')}
                       className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
                     />
                     <button 
@@ -258,7 +259,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
                   </div>
                   <div className="flex justify-end">
                      <button type="button" onClick={() => setView('forgot')} className="text-[10px] font-semibold text-white/70 hover:text-white mt-1 underline decoration-dotted">
-                         Lupa Password?
+                         {t('landing.button.forgot')}
                      </button>
                   </div>
                 </div>
@@ -270,12 +271,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
                   disabled={isLoading}
                   className="w-full py-2.5 bg-white text-brand-600 text-base font-bold rounded-xl hover:bg-gray-100 transition-all shadow-lg mt-2 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? 'MEMUAT...' : 'MASUK'} <ChevronRight size={18} />
+                  {isLoading ? t('landing.loading') : t('landing.button.login')} <ChevronRight size={18} />
                 </button>
               </form>
               <div className="mt-4 text-center">
-                  <span className="text-white/60 text-xs">Belum punya akun? </span>
-                  <button onClick={() => { setView('register'); setError(''); }} className="font-bold underline text-xs">Daftar</button>
+                  <span className="text-white/60 text-xs">{t('landing.footer.noAccount')} </span>
+                  <button onClick={() => { setView('register'); setError(''); }} className="font-bold underline text-xs">{t('landing.button.register')}</button>
               </div>
             </motion.div>
           )}
@@ -289,43 +290,43 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
               className="w-full"
             >
               <button onClick={() => { setView('landing'); setError(''); }} className="mb-4 flex items-center gap-2 text-xs font-semibold hover:opacity-80">
-                <ArrowLeft size={16} /> KEMBALI
+                <ArrowLeft size={16} /> {t('landing.button.back')}
               </button>
               
-              <h2 className="text-2xl font-bold mb-1">Buat Akun</h2>
-              <p className="text-white/70 mb-6 text-xs">Gabung komunitas SEEST sekarang.</p>
+              <h2 className="text-2xl font-bold mb-1">{t('landing.register.title')}</h2>
+              <p className="text-white/70 mb-6 text-xs">{t('landing.register.subtitle')}</p>
 
               <form onSubmit={handleRegister} className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">Nama Lengkap</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">{t('landing.label.name')}</label>
                   <input 
                     type="text" 
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Nama Anda"
+                    placeholder={t('landing.placeholder.name')}
                     className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">Email</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">{t('landing.label.email')}</label>
                   <input 
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="nama@email.com"
+                    placeholder={t('landing.placeholder.email')}
                     className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">Password</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">{t('landing.label.password')}</label>
                   <div className="relative">
                     <input 
                       type={showPassword ? "text" : "password"} 
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Buat password aman"
+                      placeholder={t('landing.placeholder.password')}
                       className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
                     />
                      <button 
@@ -345,12 +346,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
                   disabled={isLoading}
                   className="w-full py-2.5 bg-white text-brand-600 text-base font-bold rounded-xl hover:bg-gray-100 transition-all shadow-lg mt-2 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? 'MEMPROSES...' : 'DAFTAR AKUN'}
+                  {isLoading ? t('landing.processing') : t('landing.button.registerAccount')}
                 </button>
               </form>
                <div className="mt-4 text-center">
-                  <span className="text-white/60 text-xs">Sudah punya akun? </span>
-                  <button onClick={() => { setView('login'); setError(''); }} className="font-bold underline text-xs">Masuk</button>
+                  <span className="text-white/60 text-xs">{t('landing.footer.hasAccount')} </span>
+                  <button onClick={() => { setView('login'); setError(''); }} className="font-bold underline text-xs">{t('landing.button.login')}</button>
               </div>
             </motion.div>
           )}
@@ -364,20 +365,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
               className="w-full"
             >
               <button onClick={() => { setView('login'); setError(''); }} className="mb-4 flex items-center gap-2 text-xs font-semibold hover:opacity-80">
-                <ArrowLeft size={16} /> KEMBALI
+                <ArrowLeft size={16} /> {t('landing.button.back')}
               </button>
               
-              <h2 className="text-2xl font-bold mb-1">Lupa Password?</h2>
-              <p className="text-white/70 mb-6 text-xs">Masukkan email untuk reset password.</p>
+              <h2 className="text-2xl font-bold mb-1">{t('landing.forgot.title')}</h2>
+              <p className="text-white/70 mb-6 text-xs">{t('landing.forgot.subtitle')}</p>
 
               <form onSubmit={handleForgot} className="space-y-3">
                  <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">Email</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">{t('landing.label.email')}</label>
                   <input 
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="nama@email.com"
+                    placeholder={t('landing.placeholder.email')}
                     className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
                   />
                 </div>
@@ -388,7 +389,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
                   disabled={isLoading}
                   className="w-full py-2.5 bg-white text-brand-600 text-base font-bold rounded-xl hover:bg-gray-100 transition-all shadow-lg mt-2 disabled:opacity-70"
                 >
-                  {isLoading ? 'MENGIRIM...' : 'KIRIM LINK RESET'}
+                  {isLoading ? t('landing.sending') : t('landing.button.reset')}
                 </button>
               </form>
             </motion.div>
