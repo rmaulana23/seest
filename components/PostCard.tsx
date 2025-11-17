@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Post, User } from '../types';
@@ -151,7 +152,13 @@ const ReplySection: React.FC<{
 
 export const PostCard: React.FC<PostCardProps> = ({ post, users, currentUserId, onReact, onReply, onComment, onViewProfile, onEdit, onDelete, isFavorited, onToggleFavorite, onViewMedia }) => {
   const { t } = useTranslation();
-  const postUser = users.find(u => u.id === post.userId);
+  
+  // FIX: Handle anonymous posts specifically. If post.userId is 'anonymous', we create a dummy user object.
+  // Otherwise, we try to find the user in the list.
+  const postUser = post.userId === 'anonymous' 
+      ? { id: 'anonymous', name: t('post.user.anonymous'), avatar: '?', following: [], followers: [] } as User 
+      : users.find(u => u.id === post.userId);
+
   const [showOptions, setShowOptions] = useState(false);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [showReply, setShowReply] = useState(false);
@@ -199,12 +206,20 @@ export const PostCard: React.FC<PostCardProps> = ({ post, users, currentUserId, 
       {/* Post Header */}
       <div className="p-5 flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={() => onViewProfile(postUser.id)} className="h-12 w-12 rounded-full bg-white border-2 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-xl flex-shrink-0">
+          <button 
+            onClick={() => post.userId !== 'anonymous' && onViewProfile(postUser.id)} 
+            className={`h-12 w-12 rounded-full bg-white border-2 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-xl flex-shrink-0 ${post.userId === 'anonymous' ? 'cursor-default' : ''}`}
+          >
              {post.postType === 'ask' ? <HelpCircle size={24} /> : postUser.avatar}
           </button>
           <div>
             <div className="flex items-center gap-2">
-                <button onClick={() => onViewProfile(postUser.id)} className="font-bold text-gray-800 dark:text-gray-100">@{userName}</button>
+                <button 
+                    onClick={() => post.userId !== 'anonymous' && onViewProfile(postUser.id)} 
+                    className={`font-bold text-gray-800 dark:text-gray-100 ${post.userId === 'anonymous' ? 'cursor-default' : ''}`}
+                >
+                    @{userName}
+                </button>
             </div>
             <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center gap-1">
               <activityConfig.icon size={12} />

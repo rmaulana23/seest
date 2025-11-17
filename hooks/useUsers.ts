@@ -154,6 +154,16 @@ export const useUsers = () => {
      if(!currentAuthId) return;
      try {
          await supabase.from('follows').insert({ follower_id: currentAuthId, following_id: targetId });
+         
+         // Send Notification to target
+         await supabase.from('notifications').insert({
+             user_id: targetId, // Recipient
+             actor_id: currentAuthId, // Sender
+             type: 'follow',
+             text: 'started following you.',
+             related_id: currentAuthId
+         });
+
          // Force immediate refresh to update UI faster than realtime
          fetchData();
      } catch(e) { console.error(e); }
