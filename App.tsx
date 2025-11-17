@@ -56,6 +56,8 @@ export default function App() {
   // Data Hooks
   const { users, currentUser: loadedCurrentUser, followUser, unfollowUser, updateUserProfile, toggleFavorite, updateUserVisibility, addUser, isLoading: usersLoading } = useUsers();
   
+  const [page, setPage] = useState<Page>("home");
+
   // Supabase Auth Listener
   useEffect(() => {
       // Check active session
@@ -67,10 +69,17 @@ export default function App() {
       });
 
       // Listen for auth changes
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
           if (session) {
               setAuthUserId(session.user.id);
               setIsAuthenticated(true);
+              
+              // Force navigation to home on login to prevent sticking on settings/landing
+              // This fixes the issue where users land on the wrong page after auth
+              if (event === 'SIGNED_IN') {
+                  setPage('home');
+                  window.location.hash = '/status';
+              }
           } else {
               setAuthUserId(null);
               setIsAuthenticated(false);
@@ -93,7 +102,6 @@ export default function App() {
   const { events, addEvent, endEvent, joinEvent, leaveEvent, addComment: addEventComment, deleteComment: deleteEventComment, pinComment, toggleModerator, toggleMuteSpeaker, isLoading: eventsLoading } = useEvents();
   const { notifications, addNotification, markAllAsRead, hasUnread } = useNotifications();
   
-  const [page, setPage] = useState<Page>("home");
   const [activityFilter, setActivityFilter] = useState<Activity | null>(null);
   const [theme, toggleTheme] = useTheme();
   const { t, language, setLanguage } = useTranslation();
@@ -499,7 +507,7 @@ export default function App() {
         notifications={notifications}
         onMarkAllRead={markAllAsRead}
         hasUnreadNotifications={hasUnread}
-        // Pass the notification click handler to header which passes to Bell
+        onNotificationClick={handleNotificationClick}
       />
       <div className="w-full max-w-7xl mx-auto flex pt-28">
         <LeftSidebar 

@@ -93,7 +93,7 @@ export const usePosts = (bookmarkedIds: number[]) => {
         .subscribe();
         
     return () => { supabase.removeChannel(sub); }
-  }, [fetchPosts]);
+  }, [fetchPosts, currentAuthId]);
 
   const addPost = useCallback(async (userId: string, postData: { text: string; activity: Activity; media: { url: string, type: 'image' | 'video' }[]; backgroundColor: string | null; postType: 'status' | 'ask', aspectRatio?: 'portrait' | 'landscape' }) => {
     if (!currentAuthId) {
