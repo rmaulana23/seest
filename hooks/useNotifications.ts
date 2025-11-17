@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Notification } from '../types';
 
-const NOTIFICATIONS_KEY = 'seest_notifications_v2';
+const NOTIFICATIONS_KEY = 'seest_notifications_v3';
 
 export const useNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);

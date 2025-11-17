@@ -104,6 +104,7 @@ export const useUsers = () => {
   }, [currentAuthId, users, isLoading, fetchData]);
 
   useEffect(() => {
+    // Fetch data immediately when the hook mounts OR when auth ID changes (Login/Logout)
     fetchData();
     
     // Subscribe to Realtime changes
@@ -116,7 +117,7 @@ export const useUsers = () => {
         supabase.removeChannel(followsSub);
         supabase.removeChannel(savedSub);
     }
-  }, [fetchData]);
+  }, [fetchData, currentAuthId]); // Added currentAuthId dependency
 
   const addUser = useCallback((newUser: User) => {
       // Logic handled by Supabase Auth Trigger (public.handle_new_user)

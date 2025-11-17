@@ -32,10 +32,10 @@ export const ACTIVITY_CONFIG: ActivityConfig = {
 
 export const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢"];
 
-// Updated keys to v2 to clear old data
-export const POSTS_STORAGE_KEY = "seest_posts_v2";
-export const USERS_STORAGE_KEY = 'seest_users_v2';
-export const AUTH_SESSION_KEY = 'seest_auth_session_v2';
+// Updated keys to v3 to clear old data
+export const POSTS_STORAGE_KEY = "seest_posts_v3";
+export const USERS_STORAGE_KEY = 'seest_users_v3';
+export const AUTH_SESSION_KEY = 'seest_auth_session_v3';
 export const TTL_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 export const STATUS_BACKGROUNDS = [
