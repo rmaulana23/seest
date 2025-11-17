@@ -87,9 +87,11 @@ export const useUsers = () => {
                 // Profile missing! Create it manually if trigger failed
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user) {
-                    const baseUsername = user.user_metadata?.name 
-                        ? user.user_metadata.name.toLowerCase().replace(/\s/g, '') 
-                        : user.email?.split('@')[0];
+                    const cleanName = user.user_metadata?.name 
+                        ? user.user_metadata.name.toLowerCase().replace(/[^a-z0-9]/g, '') 
+                        : user.email?.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+                    
+                    const baseUsername = cleanName || 'user';
 
                     const newProfile = {
                         id: user.id,
@@ -102,12 +104,22 @@ export const useUsers = () => {
                         last_seen: new Date().toISOString()
                     };
                     
-                    const { error } = await supabase.from('profiles').upsert(newProfile);
+                    let { error } = await supabase.from('profiles').upsert(newProfile);
+
+                    // If error is unique violation (username taken), try appending random number
+                    if (error && error.code === '23505') {
+                        console.log("Username collision detected during recovery, trying random suffix...");
+                        newProfile.username = `${baseUsername}${Math.floor(Math.random() * 10000)}`;
+                        const retry = await supabase.from('profiles').upsert(newProfile);
+                        error = retry.error;
+                    }
+                    
                     if (!error) {
                         console.log("Profile recovered successfully.");
                         fetchData(); // Refresh data
                     } else {
-                        console.error("Failed to recover profile:", error);
+                        // Log the actual error message for debugging
+                        console.error("Failed to recover profile:", error.message || error);
                     }
                 }
             }
