@@ -204,7 +204,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, users, currentUserId, 
   const hasMultipleMedia = post.media && post.media.length > 1;
 
   return (
-    <motion.div variants={cardVariants} className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-700 overflow-hidden">
+    <motion.div id={`post-${post.id}`} variants={cardVariants} className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-700 overflow-hidden">
       {/* Post Header */}
       <div className="p-5 flex items-start justify-between">
         <div className="flex items-center gap-3">

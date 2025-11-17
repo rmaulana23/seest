@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Page, Activity, Post, User, PrivateMessage, Event, EventMessage } from './types';
+import { Page, Activity, Post, User, PrivateMessage, Event, EventMessage, Notification } from './types';
 import { usePosts } from './hooks/usePosts';
 import { useUsers } from './hooks/useUsers';
 import { useTheme } from './hooks/useTheme';
@@ -108,11 +108,32 @@ export default function App() {
   const [creatingEventType, setCreatingEventType] = useState<'stand-up' | 'podcast'>('stand-up');
   const [viewingStoryForUserIndex, setViewingStoryForUserIndex] = useState<number | null>(null);
   const [mediaViewerState, setMediaViewerState] = useState<{ media: Post['media']; startIndex: number } | null>(null);
-  
+  const [highlightedPostId, setHighlightedPostId] = useState<number | null>(null);
+
   const liveEvents = useMemo(() => events.filter(e => e.status === 'live'), [events]);
   const currentActiveEvent = useMemo(() => activeEventId ? events.find(e => e.id === activeEventId) : null, [activeEventId, events]);
 
   const isLoading = postsLoading || usersLoading || messagesLoading || eventsLoading;
+
+  // Scroll to highlighted post when it exists and page matches
+  useEffect(() => {
+      if (highlightedPostId) {
+          // Give a small delay for the DOM to render
+          const timer = setTimeout(() => {
+              const element = document.getElementById(`post-${highlightedPostId}`);
+              if (element) {
+                  element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  // Optional: Add a visual highlight effect here via class manipulation
+                  element.classList.add('ring-2', 'ring-brand-500', 'ring-offset-2', 'dark:ring-offset-slate-900');
+                  setTimeout(() => {
+                      element.classList.remove('ring-2', 'ring-brand-500', 'ring-offset-2', 'dark:ring-offset-slate-900');
+                  }, 2000);
+              }
+              setHighlightedPostId(null);
+          }, 500);
+          return () => clearTimeout(timer);
+      }
+  }, [highlightedPostId, page]);
 
   // --- Auth Handlers (Supabase) ---
 
@@ -424,6 +445,30 @@ export default function App() {
           addComment(currentUser.id, postId, text);
       }
   }
+  
+  const handleNotificationClick = (notif: Notification) => {
+      if (notif.type === 'follow') {
+          handleViewProfile(notif.relatedId as string);
+      } else if (['like', 'comment', 'ask'].includes(notif.type)) {
+          // Try to find the post in the loaded posts
+          const postId = Number(notif.relatedId);
+          const post = posts.find(p => p.id === postId);
+          
+          if (post) {
+              if (post.postType === 'ask') {
+                  navigateTo('ask');
+              } else {
+                  navigateTo('home');
+              }
+              // Trigger scroll logic
+              setHighlightedPostId(postId);
+          } else {
+             // Fallback if post isn't loaded (e.g. old post not in initial fetch)
+             // For now just navigate to home, better logic would be to fetch single post
+             navigateTo('home');
+          }
+      }
+  };
 
   const viewingProfileUser = users.find(u => u.id === viewingProfileFor);
 
@@ -454,6 +499,7 @@ export default function App() {
         notifications={notifications}
         onMarkAllRead={markAllAsRead}
         hasUnreadNotifications={hasUnread}
+        // Pass the notification click handler to header which passes to Bell
       />
       <div className="w-full max-w-7xl mx-auto flex pt-28">
         <LeftSidebar 

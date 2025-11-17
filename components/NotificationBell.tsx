@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,9 +12,10 @@ interface NotificationBellProps {
     users: User[];
     onMarkAllRead: () => void;
     hasUnread: boolean;
+    onNotificationClick?: (notification: Notification) => void;
 }
 
-export const NotificationBell: React.FC<NotificationBellProps> = ({ isHeader, notifications, users, onMarkAllRead, hasUnread }) => {
+export const NotificationBell: React.FC<NotificationBellProps> = ({ isHeader, notifications, users, onMarkAllRead, hasUnread, onNotificationClick }) => {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -27,6 +29,13 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ isHeader, no
             onMarkAllRead();
         }
         setIsOpen(!isOpen);
+    };
+
+    const handleClickItem = (notif: Notification) => {
+        if (onNotificationClick) {
+            onNotificationClick(notif);
+        }
+        setIsOpen(false);
     };
 
     useEffect(() => {
@@ -70,7 +79,11 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ isHeader, no
                                 notifications.map(notif => {
                                     const user = users.find(u => u.id === notif.userId);
                                     return (
-                                        <div key={notif.id} className={`p-4 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors ${!notif.isRead ? 'bg-brand-50 dark:bg-slate-700/30' : ''}`}>
+                                        <div 
+                                            key={notif.id} 
+                                            onClick={() => handleClickItem(notif)}
+                                            className={`p-4 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer ${!notif.isRead ? 'bg-brand-50 dark:bg-slate-700/30' : ''}`}
+                                        >
                                             <div className="h-8 w-8 rounded-full bg-white border border-brand-200 flex items-center justify-center text-brand-600 font-bold text-xs flex-shrink-0">
                                                 {user ? user.avatar : '?'}
                                             </div>
