@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MessageSquare, Search } from 'lucide-react';
 import { useTranslation } from '../contexts/LanguageContext';
@@ -15,15 +16,20 @@ interface HeaderProps {
     notifications: Notification[];
     onMarkAllRead: () => void;
     hasUnreadNotifications: boolean;
+    hasUnreadMessages: boolean;
+    onNotificationClick?: (notification: Notification) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ currentUser, users, onOpenMessages, onNavigateToProfile, activityFilter, onFilterActivity, notifications, onMarkAllRead, hasUnreadNotifications }) => {
+export const Header: React.FC<HeaderProps> = ({ currentUser, users, onOpenMessages, onNavigateToProfile, activityFilter, onFilterActivity, notifications, onMarkAllRead, hasUnreadNotifications, hasUnreadMessages, onNotificationClick }) => {
   const { t } = useTranslation();
   return (
     <div className="fixed top-0 left-0 right-0 p-4 z-40 bg-gray-100 dark:bg-slate-900">
       <header className="max-w-7xl mx-auto bg-brand-600 text-white rounded-2xl shadow-lg py-3 px-6 flex items-center justify-between gap-4">
         {/* Logo */}
-        <h1 className="text-xl font-bold tracking-wider flex-shrink-0">SEEST</h1>
+        <div className="flex items-center gap-3 flex-shrink-0">
+            <img src="https://i.imgur.com/e00ntr3.jpg" alt="SEEST Logo" className="w-8 h-8 rounded-lg bg-white/10" />
+            <h1 className="text-xl font-bold tracking-wider">SEEST</h1>
+        </div>
 
         {/* Desktop Search Bar */}
         <div className="flex-1 hidden md:flex justify-center px-4">
@@ -42,14 +48,23 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, users, onOpenMessag
             {/* Mobile Icons */}
             <div className="flex md:hidden items-center gap-1">
               <ActivityFilter activityFilter={activityFilter} onFilterActivity={onFilterActivity} isHeader />
-              <NotificationBell isHeader notifications={notifications} users={users} onMarkAllRead={onMarkAllRead} hasUnread={hasUnreadNotifications} />
+              <NotificationBell isHeader notifications={notifications} users={users} onMarkAllRead={onMarkAllRead} hasUnread={hasUnreadNotifications} onNotificationClick={onNotificationClick} />
+               <button onClick={onOpenMessages} className="relative p-2.5 text-white hover:bg-white/10 rounded-full transition-colors">
+                <MessageSquare size={20} />
+                 {hasUnreadMessages && (
+                    <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-brand-600"></span>
+                )}
+              </button>
             </div>
             
             {/* Desktop Icons */}
             <div className="hidden md:flex items-center gap-1 md:gap-2">
-              <NotificationBell isHeader notifications={notifications} users={users} onMarkAllRead={onMarkAllRead} hasUnread={hasUnreadNotifications} />
-              <button onClick={onOpenMessages} className="p-2.5 hover:bg-white/10 rounded-full transition-colors">
+              <NotificationBell isHeader notifications={notifications} users={users} onMarkAllRead={onMarkAllRead} hasUnread={hasUnreadNotifications} onNotificationClick={onNotificationClick} />
+              <button onClick={onOpenMessages} className="relative p-2.5 hover:bg-white/10 rounded-full transition-colors">
                 <MessageSquare size={22} />
+                 {hasUnreadMessages && (
+                    <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-brand-600"></span>
+                )}
               </button>
             </div>
 

@@ -257,6 +257,19 @@ export const locales = {
     "auth.error.userAlreadyExists": "Pengguna sudah terdaftar.",
     "auth.forgotPassword.success": "Link reset password telah dikirim ke email Anda.",
 
+    // Onboarding
+    "onboarding.welcome.title": "Selamat Datang di SEEST!",
+    "onboarding.welcome.desc": "Tempat di mana cerita Anda hidup selama 24 jam. Bagikan momen nyata, tanpa filter, dan spontan.",
+    "onboarding.feed.title": "Cerita Hari Ini",
+    "onboarding.feed.desc": "Di sini Anda akan melihat cerita dari teman mutual Anda. Tidak ada teman? Feed ini akan tetap bersih.",
+    "onboarding.create.title": "Bagikan Momenmu",
+    "onboarding.create.desc": "Klik tombol ini untuk membuat cerita baru. Tambahkan foto, video, atau hanya teks dengan warna.",
+    "onboarding.connect.title": "Bangun Lingkaranmu",
+    "onboarding.connect.desc": "Cari teman dan ikuti mereka. Setelah mereka mengikuti balik (mutual), Anda bisa melihat cerita mereka.",
+    "onboarding.next": "Lanjut",
+    "onboarding.skip": "Lewati",
+    "onboarding.finish": "Mulai SEEST",
+
     // Activities
     "activity.Relaxing": "Santai",
     "activity.Working": "Kerja",
@@ -539,6 +552,19 @@ export const locales = {
     "auth.error.generic": "An error occurred. Please try again.",
     "auth.error.userAlreadyExists": "User already exists.",
     "auth.forgotPassword.success": "Password reset link sent to your email.",
+
+    // Onboarding
+    "onboarding.welcome.title": "Welcome to SEEST!",
+    "onboarding.welcome.desc": "A place where your stories live for 24 hours. Share real, unfiltered, spontaneous moments.",
+    "onboarding.feed.title": "Today's Feed",
+    "onboarding.feed.desc": "This is where you'll see stories from your mutual friends. No friends yet? It will stay clean.",
+    "onboarding.create.title": "Share Your Moment",
+    "onboarding.create.desc": "Click this button to create a new story. Add photos, videos, or just colorful text.",
+    "onboarding.connect.title": "Build Your Circle",
+    "onboarding.connect.desc": "Find friends and follow them. Once they follow back (mutual), you can see their stories.",
+    "onboarding.next": "Next",
+    "onboarding.skip": "Skip",
+    "onboarding.finish": "Get Started",
 
     // Activities
     "activity.Relaxing": "Relaxing",

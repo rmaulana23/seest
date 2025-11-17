@@ -64,7 +64,7 @@ const BackgroundTypography = () => {
 };
 
 export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegister, onResetPassword }) => {
-  const { t } = useTranslation();
+  const { t, language, setLanguage } = useTranslation();
   const [view, setView] = useState<ViewState>('landing');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -101,6 +101,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
     if (error) {
       setError(error.message || t('auth.error.generic'));
     } else {
+      // Set flag for new user tutorial
+      localStorage.setItem('seest_new_user', 'true');
       setShowConfirmModal(true);
     }
   };
@@ -123,6 +125,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
     <div className="h-screen w-screen overflow-hidden bg-brand-600 flex flex-col items-center justify-center text-white font-sans p-6 relative">
       
       <BackgroundTypography />
+      
+      {/* Top Left Logo */}
+      <div className="absolute top-6 left-6 z-50">
+         <img src="https://i.imgur.com/e00ntr3.jpg" alt="SEEST Logo" className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md shadow-xl border border-white/20" />
+      </div>
+
+      {/* Language Toggle */}
+      <div className="absolute top-6 right-6 z-50 flex gap-2 bg-black/20 p-1 rounded-full backdrop-blur-md border border-white/10">
+         <button 
+            onClick={() => setLanguage('id')} 
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${language === 'id' ? 'bg-white text-brand-600 shadow-md' : 'text-white hover:bg-white/10'}`}
+         >
+            ID
+         </button>
+         <button 
+            onClick={() => setLanguage('en')} 
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${language === 'en' ? 'bg-white text-brand-600 shadow-md' : 'text-white hover:bg-white/10'}`}
+         >
+            EN
+         </button>
+      </div>
       
       {/* Confirmation Modal */}
       <AnimatePresence>

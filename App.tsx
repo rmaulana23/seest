@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Page, Activity, Post, User, PrivateMessage, Event, EventMessage, Notification } from './types';
@@ -33,6 +34,7 @@ import { CURRENT_USER_ID } from './constants';
 import { ComingSoonView } from './components/ComingSoonView';
 import { MediaViewerModal } from './components/MediaViewerModal';
 import { LandingPage } from './components/LandingPage';
+import { OnboardingTutorial } from './components/OnboardingTutorial';
 import { supabase } from './lib/supabase';
 
 
@@ -117,6 +119,27 @@ export default function App() {
   const [viewingStoryForUserIndex, setViewingStoryForUserIndex] = useState<number | null>(null);
   const [mediaViewerState, setMediaViewerState] = useState<{ media: Post['media']; startIndex: number } | null>(null);
   const [highlightedPostId, setHighlightedPostId] = useState<number | null>(null);
+  
+  // Onboarding State
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  
+  // Unread Messages State
+  const [lastMessagesOpenTime, setLastMessagesOpenTime] = useState<number>(() => {
+      try {
+          const saved = localStorage.getItem('seest_last_messages_open_time');
+          return saved ? parseInt(saved, 10) : Date.now();
+      } catch { return Date.now(); }
+  });
+
+  useEffect(() => {
+      // Check for new user flag
+      if (isAuthenticated) {
+          const isNewUser = localStorage.getItem('seest_new_user');
+          if (isNewUser === 'true') {
+              setShowOnboarding(true);
+          }
+      }
+  }, [isAuthenticated]);
 
   const liveEvents = useMemo(() => events.filter(e => e.status === 'live'), [events]);
   const currentActiveEvent = useMemo(() => activeEventId ? events.find(e => e.id === activeEventId) : null, [activeEventId, events]);
@@ -349,6 +372,15 @@ export default function App() {
     );
   }, [messages, chattingWithUser, currentUser]);
 
+  // Unread Messages Logic
+  const hasUnreadMessages = useMemo(() => {
+      if (!currentUser) return false;
+      return messages.some(m => 
+        m.receiverId === currentUser.id && 
+        new Date(m.createdAt).getTime() > lastMessagesOpenTime
+      );
+  }, [messages, currentUser, lastMessagesOpenTime]);
+
   const handleAddPost = (postData: { text: string; activity: Activity; media: { url: string, type: 'image' | 'video' }[]; backgroundColor: string | null; postType: 'status' | 'ask'; aspectRatio?: 'portrait' | 'landscape' }) => {
     if (currentUser) {
       addPost(currentUser.id, postData);
@@ -416,7 +448,12 @@ export default function App() {
     addMessage(message);
   };
   
-  const handleOpenMessagesModal = () => setIsMessagesModalOpen(true);
+  const handleOpenMessagesModal = () => {
+      setIsMessagesModalOpen(true);
+      const now = Date.now();
+      setLastMessagesOpenTime(now);
+      localStorage.setItem('seest_last_messages_open_time', String(now));
+  };
   const handleCloseMessagesModal = () => setIsMessagesModalOpen(false);
 
   const handleCreateEvent = (eventData: { title: string; description: string; type: 'stand-up' | 'podcast'; speakers: string[]; coverImage?: string; }) => {
@@ -477,6 +514,11 @@ export default function App() {
           }
       }
   };
+  
+  const handleCompleteOnboarding = () => {
+      setShowOnboarding(false);
+      localStorage.removeItem('seest_new_user');
+  };
 
   const viewingProfileUser = users.find(u => u.id === viewingProfileFor);
 
@@ -496,7 +538,13 @@ export default function App() {
   // Render the existing app...
   return (
     <div className="min-h-screen text-gray-800 dark:text-gray-200 font-sans">
-      {/* ... all other components remain the same ... */}
+      
+      <AnimatePresence>
+        {showOnboarding && (
+            <OnboardingTutorial onComplete={handleCompleteOnboarding} />
+        )}
+      </AnimatePresence>
+
       <Header 
         currentUser={currentUser}
         users={users}
@@ -507,6 +555,7 @@ export default function App() {
         notifications={notifications}
         onMarkAllRead={markAllAsRead}
         hasUnreadNotifications={hasUnread}
+        hasUnreadMessages={hasUnreadMessages}
         onNotificationClick={handleNotificationClick}
       />
       <div className="w-full max-w-7xl mx-auto flex pt-28">
