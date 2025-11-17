@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SEEST</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class', // Enable class-based dark mode
+        theme: {
+          extend: {
+            colors: {
+              'brand': {
+                '50': '#fef6f6',
+                '100': '#fdecec',
+                '200': '#fbdada',
+                '300': '#f8c1c1',
+                '400': '#f29897',
+                '500': '#e96a68',
+                '600': '#C23432',
+                '700': '#b32f2d',
+                '800': '#932826',
+                '900': '#792624',
+                '950': '#400f0e',
+              },
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+      body {
+        font-family: 'Poppins', sans-serif;
+      }
+      /* Custom Scrollbar Styles */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px; /* For vertical scrollbars */
+        height: 8px; /* For horizontal scrollbars */
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background-color: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #d1d5db; /* gray-300 */
+        border-radius: 10px;
+        border: 2px solid transparent;
+        background-clip: content-box;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: #9ca3af; /* gray-400 */
+      }
+      /* Dark mode scrollbar styles */
+      html.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #4b5563; /* gray-600 */
+      }
+      html.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: #6b7280; /* gray-500 */
+      }
+      /* Hide scrollbar utility */
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.553.0",
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.24",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+</head>
+  <body class="bg-gray-100 dark:bg-slate-900">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
