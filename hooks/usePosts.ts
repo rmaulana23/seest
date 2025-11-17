@@ -10,9 +10,11 @@ export const usePosts = (bookmarkedIds: number[]) => {
 
   // Get current user
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const getAuth = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
         setCurrentAuthId(session?.user.id || null);
-    });
+    };
+    getAuth();
     
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
         setCurrentAuthId(session?.user.id || null);
@@ -21,36 +23,53 @@ export const usePosts = (bookmarkedIds: number[]) => {
   }, []);
 
   const fetchPosts = useCallback(async () => {
-    setIsLoading(true);
+    // Don't set loading to true on background refreshes to avoid flickering
+    // setIsLoading(true); 
     try {
-        // In a real app, we would have a complex query or view for the feed.
-        // For now, we fetch all posts and filter them client side or assume RLS handles visibility.
-        // We need 'ask' posts (public) and 'status' posts (friends).
-        // Simple approach: Fetch recently created posts.
-        
+        // Calculate 24 hours ago in ISO string
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+        // Filter: Get posts created AFTER 24 hours ago
+        // Fetch relations: reactions, comments, replies
         const { data, error } = await supabase
             .from('posts')
-            .select('*')
+            .select(`
+                *,
+                reactions:post_reactions(user_id, emoji),
+                comments:post_comments(id, user_id, text, created_at),
+                replies:post_replies(user_id, text)
+            `)
+            .gt('created_at', twentyFourHoursAgo) 
             .order('created_at', { ascending: false })
-            .limit(100); // Limit for performance
+            .limit(100);
 
         if (error) throw error;
 
         if (data) {
-            const mappedPosts: Post[] = data.map((p: any) => ({
-                id: p.id,
-                userId: p.post_type === 'ask' ? 'anonymous' : p.user_id, // Hide ID for Ask locally
-                activity: p.activity as Activity,
-                text: p.text,
-                media: p.media || [],
-                backgroundColor: p.background_color,
-                createdAt: p.created_at,
-                reactions: {}, // Placeholder, implementation would require a separate table join
-                postType: p.post_type,
-                replies: [], // Placeholder
-                comments: [], // Placeholder
-                aspectRatio: p.aspect_ratio,
-            }));
+            const mappedPosts: Post[] = data.map((p: any) => {
+                // Map reactions array to object { userId: emoji }
+                const reactionsMap: Record<string, string> = {};
+                if (p.reactions && Array.isArray(p.reactions)) {
+                    p.reactions.forEach((r: any) => {
+                        reactionsMap[r.user_id] = r.emoji;
+                    });
+                }
+
+                return {
+                    id: p.id,
+                    userId: p.post_type === 'ask' ? 'anonymous' : p.user_id,
+                    activity: p.activity as Activity,
+                    text: p.text,
+                    media: p.media || [],
+                    backgroundColor: p.background_color,
+                    createdAt: p.created_at,
+                    reactions: reactionsMap, 
+                    postType: p.post_type,
+                    replies: p.replies || [], 
+                    comments: p.comments || [], 
+                    aspectRatio: p.aspect_ratio,
+                };
+            });
             setPosts(mappedPosts);
         }
     } catch (error) {
@@ -61,24 +80,32 @@ export const usePosts = (bookmarkedIds: number[]) => {
   }, []);
 
   useEffect(() => {
+    setIsLoading(true); // Initial load
     fetchPosts();
 
+    // Subscribe to changes on posts and related tables
     const sub = supabase
-        .channel('public:posts')
+        .channel('public:posts_realtime')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, fetchPosts)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'post_reactions' }, fetchPosts)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'post_comments' }, fetchPosts)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'post_replies' }, fetchPosts)
         .subscribe();
         
     return () => { supabase.removeChannel(sub); }
   }, [fetchPosts]);
 
   const addPost = useCallback(async (userId: string, postData: { text: string; activity: Activity; media: { url: string, type: 'image' | 'video' }[]; backgroundColor: string | null; postType: 'status' | 'ask', aspectRatio?: 'portrait' | 'landscape' }) => {
-    if (!currentAuthId) return;
+    if (!currentAuthId) {
+        console.error("Cannot post: User not authenticated");
+        return;
+    }
 
     const newPostPayload = {
         user_id: currentAuthId,
         text: postData.text.slice(0, 150),
         activity: postData.activity,
-        media: postData.media, // Supabase handles JSONB
+        media: postData.media,
         background_color: postData.backgroundColor,
         post_type: postData.postType,
         aspect_ratio: postData.aspectRatio
@@ -86,20 +113,23 @@ export const usePosts = (bookmarkedIds: number[]) => {
 
     try {
         const { data: postDataResult, error } = await supabase.from('posts').insert(newPostPayload).select().single();
-        if (error) throw error;
+        
+        if (error) {
+            console.error("Supabase Insert Error:", error.message);
+            alert("Gagal memposting cerita: " + error.message);
+            throw error;
+        }
+
+        // Immediately refresh posts to update UI
+        fetchPosts();
 
         // --- Logic for Mutual Notifications on 'Ask' ---
         if (postData.postType === 'ask' && postDataResult) {
-            // 1. Get Mutual Friends
-            // A mutual is someone I follow AND who follows me.
-            
-            // Get people I follow
             const { data: followingData } = await supabase
                 .from('follows')
                 .select('following_id')
                 .eq('follower_id', currentAuthId);
                 
-            // Get people who follow me
             const { data: followerData } = await supabase
                 .from('follows')
                 .select('follower_id')
@@ -109,7 +139,6 @@ export const usePosts = (bookmarkedIds: number[]) => {
                 const followingIds = followingData.map(f => f.following_id);
                 const followerIds = followerData.map(f => f.follower_id);
                 
-                // Intersection
                 const mutualIds = followingIds.filter(id => followerIds.includes(id));
                 
                 if (mutualIds.length > 0) {
@@ -127,43 +156,114 @@ export const usePosts = (bookmarkedIds: number[]) => {
         }
 
     } catch (e) {
-        console.error("Error creating post:", e);
+        console.error("Error creating post logic:", e);
     }
-  }, [currentAuthId]);
+  }, [currentAuthId, fetchPosts]);
 
-  // Placeholder functions for features not fully migrated to DB in this step (reactions/comments)
-  // To fully implement, we'd need the `post_reactions` and `post_comments` tables linked in `fetchPosts`.
-  // For now, we keep the UI working but these won't persist beautifully without those SQL joins implemented in fetch.
-  
-  const addReaction = useCallback((userId: string, postId: number, emoji: string) => {
-      // Todo: Implement supabase insert to post_reactions
-      console.log("Reaction added (local simulation only until full DB join implemented)");
-  }, []);
-  
-  const addReply = useCallback((userId: string, postId: number, replyText: string) => {
-       // Todo: Implement supabase insert to post_replies
-  }, []);
+  const addReaction = useCallback(async (userId: string, postId: number, emoji: string) => {
+      if (!currentAuthId) return;
 
-  const addComment = useCallback((userId: string, postId: number, commentText: string) => {
-       // Todo: Implement supabase insert to post_comments
-  }, []);
+      try {
+          // 1. Upsert Reaction
+          const { error } = await supabase
+            .from('post_reactions')
+            .upsert({ post_id: postId, user_id: currentAuthId, emoji }, { onConflict: 'post_id,user_id' });
+          
+          if (error) throw error;
+
+          // 2. Send Notification (if not self-reaction)
+          const { data: post } = await supabase.from('posts').select('user_id').eq('id', postId).single();
+          
+          if (post && post.user_id !== currentAuthId) {
+              await supabase.from('notifications').insert({
+                  user_id: post.user_id,
+                  actor_id: currentAuthId,
+                  type: 'like',
+                  text: 'liked your story.',
+                  related_id: postId
+              });
+          }
+          fetchPosts();
+      } catch (error) {
+          console.error("Error adding reaction:", error);
+      }
+  }, [currentAuthId, fetchPosts]);
+  
+  const addReply = useCallback(async (userId: string, postId: number, replyText: string) => {
+      if (!currentAuthId) return;
+
+       try {
+          // 1. Insert Reply
+          const { error } = await supabase
+            .from('post_replies')
+            .insert({ post_id: postId, user_id: currentAuthId, text: replyText });
+          
+          if (error) throw error;
+
+          // 2. Send Notification
+          const { data: post } = await supabase.from('posts').select('user_id').eq('id', postId).single();
+          
+          if (post && post.user_id !== currentAuthId) {
+              await supabase.from('notifications').insert({
+                  user_id: post.user_id,
+                  actor_id: currentAuthId,
+                  type: 'comment', // Treating reply as comment for notification type simplicity
+                  text: 'replied to your anonymous question.',
+                  related_id: postId
+              });
+          }
+          fetchPosts();
+      } catch (error) {
+          console.error("Error adding reply:", error);
+      }
+  }, [currentAuthId, fetchPosts]);
+
+  const addComment = useCallback(async (userId: string, postId: number, commentText: string) => {
+      if (!currentAuthId) return;
+
+      try {
+          // 1. Insert Comment
+          const { error } = await supabase
+            .from('post_comments')
+            .insert({ post_id: postId, user_id: currentAuthId, text: commentText });
+          
+          if (error) throw error;
+
+          // 2. Send Notification
+          const { data: post } = await supabase.from('posts').select('user_id').eq('id', postId).single();
+          
+          if (post && post.user_id !== currentAuthId) {
+              await supabase.from('notifications').insert({
+                  user_id: post.user_id,
+                  actor_id: currentAuthId,
+                  type: 'comment',
+                  text: 'commented on your story.',
+                  related_id: postId
+              });
+          }
+          fetchPosts();
+      } catch (error) {
+           console.error("Error adding comment:", error);
+      }
+  }, [currentAuthId, fetchPosts]);
   
   const deletePost = useCallback(async (postId: number) => {
     try {
         await supabase.from('posts').delete().eq('id', postId);
-        // Realtime will update UI
+        fetchPosts();
     } catch (e) {
         console.error("Error deleting post:", e);
     }
-  }, []);
+  }, [fetchPosts]);
 
   const updatePost = useCallback(async (postId: number, updates: { text: string; activity: Activity }) => {
       try {
           await supabase.from('posts').update({ text: updates.text, activity: updates.activity }).eq('id', postId);
+          fetchPosts();
       } catch (e) {
           console.error("Error updating post:", e);
       }
-  }, []);
+  }, [fetchPosts]);
 
   return { posts, addPost, addReaction, addReply, addComment, deletePost, updatePost, isLoading };
 };

@@ -12,6 +12,11 @@ export const useNotifications = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
         setCurrentAuthId(session?.user.id || null);
     });
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setCurrentAuthId(session?.user.id || null);
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   const fetchNotifications = useCallback(async () => {
@@ -44,10 +49,16 @@ export const useNotifications = () => {
     
     if (!currentAuthId) return;
 
+    // Subscribe to new notifications specifically for this user
     const sub = supabase
         .channel('public:notifications')
         .on('postgres_changes', 
-            { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${currentAuthId}` },
+            { 
+                event: 'INSERT', 
+                schema: 'public', 
+                table: 'notifications', 
+                filter: `user_id=eq.${currentAuthId}` 
+            },
             (payload) => {
                 const newNotif = payload.new as any;
                 const mapped: Notification = {

@@ -95,24 +95,27 @@ const ReplySection: React.FC<{
         }
     }
 
+    // Always show section if there are replies, regardless of input state
     if (!showReplyInput && (!post.replies || post.replies.length === 0)) return null;
 
     return (
-        <div className="px-5 pt-3">
+        <div className="px-5 pt-3 pb-4">
              {post.replies && post.replies.length > 0 && (
-                <div className="space-y-3 mb-3">
+                <div className="space-y-3 mb-4 max-h-40 overflow-y-auto custom-scrollbar pr-1">
                     {post.replies.map((reply, index) => {
                         const user = users.find(u => u.id === reply.userId);
-                        if (!user) return null;
-                        const userName = user.id === currentUserId ? t('post.user.you') : user.name;
+                        // Fallback if user not loaded yet
+                        const userName = user ? (user.id === currentUserId ? t('post.user.you') : user.name) : 'User';
+                        const userAvatar = user ? user.avatar : '?';
+
                         return (
                             <div key={index} className="flex items-start gap-2">
-                                <button onClick={() => onViewProfile(user.id)} className="h-7 w-7 mt-0.5 rounded-full bg-white border-2 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-xs flex-shrink-0">
-                                    {user.avatar}
+                                <button onClick={() => user && onViewProfile(user.id)} className="h-7 w-7 mt-0.5 rounded-full bg-white border border-brand-600 flex items-center justify-center text-brand-600 font-bold text-xs flex-shrink-0">
+                                    {userAvatar}
                                 </button>
-                                <div>
-                                    <span className="font-semibold text-sm text-gray-800 dark:text-gray-200">@{userName}</span>
-                                    <p className="text-sm text-gray-600 dark:text-gray-300">{reply.text}</p>
+                                <div className="bg-gray-50 dark:bg-slate-700/50 rounded-r-xl rounded-bl-xl p-2 text-sm">
+                                    <span className="font-bold text-gray-800 dark:text-gray-200 text-xs block mb-0.5">@{userName}</span>
+                                    <p className="text-gray-700 dark:text-gray-300">{reply.text}</p>
                                 </div>
                             </div>
                         )
@@ -125,22 +128,22 @@ const ReplySection: React.FC<{
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="flex items-center gap-2 pt-3 border-t border-gray-100 dark:border-slate-700"
+                    className="flex items-center gap-2 pt-2 border-t border-gray-100 dark:border-slate-700"
                 >
-                    <div className="h-7 w-7 rounded-full bg-white border-2 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-xs flex-shrink-0">
-                        {currentUser?.avatar}
+                    <div className="h-8 w-8 rounded-full bg-white border-2 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-xs flex-shrink-0">
+                        {currentUser?.avatar || '?'}
                     </div>
-                    <form onSubmit={handleReplySubmit} className="flex-grow flex items-center">
+                    <form onSubmit={handleReplySubmit} className="flex-grow flex items-center gap-2">
                         <input 
                             type="text"
                             value={replyText}
                             onChange={e => setReplyText(e.target.value)}
                             placeholder={t('post.reply.placeholder')}
-                            className="w-full bg-gray-100 dark:bg-slate-700 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            className="flex-grow bg-gray-100 dark:bg-slate-700 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-gray-200"
                             autoFocus
                         />
-                        <button type="submit" className="p-2 ml-2 text-brand-600 hover:text-brand-700 disabled:text-gray-400" disabled={!replyText.trim()}>
-                            <Send size={20} />
+                        <button type="submit" className="p-2 bg-brand-600 text-white rounded-full hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm" disabled={!replyText.trim()}>
+                            <Send size={16} />
                         </button>
                     </form>
                 </motion.div>
@@ -153,8 +156,7 @@ const ReplySection: React.FC<{
 export const PostCard: React.FC<PostCardProps> = ({ post, users, currentUserId, onReact, onReply, onComment, onViewProfile, onEdit, onDelete, isFavorited, onToggleFavorite, onViewMedia }) => {
   const { t } = useTranslation();
   
-  // FIX: Handle anonymous posts specifically. If post.userId is 'anonymous', we create a dummy user object.
-  // Otherwise, we try to find the user in the list.
+  // Handle anonymous posts
   const postUser = post.userId === 'anonymous' 
       ? { id: 'anonymous', name: t('post.user.anonymous'), avatar: '?', following: [], followers: [] } as User 
       : users.find(u => u.id === post.userId);
