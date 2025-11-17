@@ -165,8 +165,9 @@ export default function App() {
               if (options.userId) {
                   const user = users.find(u => u.id === options.userId);
                   if (user) {
-                      const profileName = user.id === currentUser?.id ? 'kamu' : user.name.toLowerCase();
-                      window.location.hash = `/@${profileName}`;
+                      // Use username for routing instead of name
+                      const profileHandle = user.id === currentUser?.id ? 'kamu' : (user.username || user.id);
+                      window.location.hash = `/@${profileHandle}`;
                   }
               }
               break;
@@ -214,8 +215,13 @@ export default function App() {
       }
 
       if (hash.startsWith('/@')) {
-          const username = hash.substring(2);
-          const user = users.find(u => (u.id === currentUser?.id ? 'kamu' : u.name.toLowerCase()) === username);
+          const handle = hash.substring(2);
+          // Check by username specifically
+          const user = users.find(u => {
+              if (u.id === currentUser?.id && handle === 'kamu') return true;
+              return u.username && u.username.toLowerCase() === handle.toLowerCase();
+          });
+
           if (user) {
               setViewingProfileFor(user.id);
               setPage('profile');
@@ -356,11 +362,15 @@ export default function App() {
     setIsEditingProfile(true);
   };
 
-  const handleUpdateUserProfile = (updates: { bio: string, currentActivity: Activity }) => {
+  const handleUpdateUserProfile = async (updates: { bio: string, currentActivity: Activity, username?: string }) => {
     if (currentUser) {
-      updateUserProfile(currentUser.id, updates);
+      const result = await updateUserProfile(currentUser.id, updates);
+      if (!result.error) {
+          setIsEditingProfile(false);
+      } else {
+          alert(result.error); // Ideally show this in the form
+      }
     }
-    setIsEditingProfile(false);
   };
 
   const handleOpenChat = (user: User) => {

@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { LayoutGrid, Settings, Wind, HelpCircle, Users, Star, Calendar, Plus } from 'lucide-react';
 import { Page, User as UserType, Event } from '../types';
@@ -39,7 +40,7 @@ const NavButton: React.FC<{
 export const LeftSidebar: React.FC<LeftSidebarProps> = ({ activePage, setPage, currentUser, onNavigateToProfile, liveEvents, onCreatePost }) => {
   const { t } = useTranslation();
   
-  const userName = currentUser ? (currentUser.id === 'user-you' ? t('sidebar.profile.you') : currentUser.name) : '...';
+  const userHandle = currentUser ? (currentUser.id === 'user-you' ? t('sidebar.profile.you') : (currentUser.username || currentUser.name)) : '...';
   
   const isCurrentUserLive = useMemo(() => {
     if (!currentUser) return false;
@@ -64,7 +65,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({ activePage, setPage, c
             {currentUser.avatar}
           </div>
           <div>
-            <div className="font-semibold text-gray-800 dark:text-gray-100">@{userName}</div>
+            <div className="font-semibold text-gray-800 dark:text-gray-100">@{userHandle}</div>
             {isCurrentUserLive ? (
               <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="relative flex h-2 w-2">

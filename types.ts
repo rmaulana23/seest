@@ -3,6 +3,7 @@
 export interface User {
   id: string;
   name: string;
+  username?: string; // Unique handle
   avatar: string;
   following: string[]; // array of user ids
   followers: string[]; // array of user ids
@@ -13,6 +14,7 @@ export interface User {
   favoritePostIds?: number[];
   email?: string;
   password?: string;
+  lastUsernameChange?: string; // ISO string
 }
 
 export type Activity = "Relaxing" | "Working" | "Vacation" | "Eating" | "Exercise" | "Watching" | "Music" | "Others";

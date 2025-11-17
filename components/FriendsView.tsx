@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { User, Event } from '../types';
@@ -30,12 +31,12 @@ const UserListItem: React.FC<{
       </div>
       <div>
         <div className="flex items-center gap-2">
-            <p className="font-bold text-gray-800 dark:text-gray-100">@{user.name}</p>
+            <p className="font-bold text-gray-800 dark:text-gray-100">@{user.username || user.name}</p>
             {isLive && (
                 <span className="px-1.5 py-0.5 text-[10px] font-bold text-red-100 bg-red-600 rounded-full animate-pulse">{t('events.live')}</span>
             )}
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[150px] sm:max-w-xs">{user.bio}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[150px] sm:max-w-xs">{user.name}</p>
       </div>
     </button>
     
@@ -68,7 +69,8 @@ export const FriendsView: React.FC<FriendsViewProps> = ({ allUsers, currentUser,
   const searchResults = useMemo(() => {
     if (!searchTerm.trim()) return [];
     return otherUsers.filter(user => 
-      user.name.toLowerCase().includes(searchTerm.toLowerCase())
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.username && user.username.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [searchTerm, otherUsers]);
 

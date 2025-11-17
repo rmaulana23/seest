@@ -42,9 +42,17 @@ export const useUsers = () => {
             const userFollowing = follows.filter((f: any) => f.follower_id === p.id).map((f: any) => f.following_id);
             const userFavorites = savedPosts.filter((s: any) => s.user_id === p.id).map((s: any) => s.post_id);
 
+            // Fallback for username if not present in legacy data
+            let username = p.username;
+            if (!username) {
+                const base = p.email ? p.email.split('@')[0] : (p.name || 'user').toLowerCase().replace(/\s/g, '');
+                username = base;
+            }
+
             return {
                 id: p.id,
                 name: p.name || p.email?.split('@')[0] || 'User',
+                username: username,
                 email: p.email,
                 avatar: p.avatar || '?',
                 bio: p.bio,
@@ -54,6 +62,7 @@ export const useUsers = () => {
                 followers: userFollowers,
                 following: userFollowing,
                 favoritePostIds: userFavorites,
+                lastUsernameChange: p.last_username_change,
             };
         });
         
@@ -78,10 +87,15 @@ export const useUsers = () => {
                 // Profile missing! Create it manually if trigger failed
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user) {
+                    const baseUsername = user.user_metadata?.name 
+                        ? user.user_metadata.name.toLowerCase().replace(/\s/g, '') 
+                        : user.email?.split('@')[0];
+
                     const newProfile = {
                         id: user.id,
                         email: user.email,
                         name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+                        username: baseUsername,
                         avatar: user.user_metadata?.avatar || user.email?.charAt(0).toUpperCase() || 'U',
                         bio: '',
                         current_activity: 'Relaxing',
@@ -117,7 +131,7 @@ export const useUsers = () => {
         supabase.removeChannel(followsSub);
         supabase.removeChannel(savedSub);
     }
-  }, [fetchData, currentAuthId]); // Added currentAuthId dependency
+  }, [fetchData, currentAuthId]);
 
   const addUser = useCallback((newUser: User) => {
       // Logic handled by Supabase Auth Trigger (public.handle_new_user)
@@ -138,16 +152,46 @@ export const useUsers = () => {
      } catch(e) { console.error(e); }
   }, [currentAuthId]);
   
-  const updateUserProfile = useCallback(async (userId: string, updates: { bio: string, currentActivity: Activity }) => {
-    if (userId !== currentAuthId) return;
+  const updateUserProfile = useCallback(async (userId: string, updates: { bio: string, currentActivity: Activity, username?: string }): Promise<{error?: string}> => {
+    if (userId !== currentAuthId) return { error: 'Unauthorized' };
+    
+    const currentUser = users.find(u => u.id === userId);
+    const updatesPayload: any = {
+        bio: updates.bio.slice(0, 160),
+        current_activity: updates.currentActivity,
+        last_seen: new Date().toISOString()
+    };
+
+    // Handle Username Change logic
+    if (updates.username && currentUser && updates.username !== currentUser.username) {
+        const now = new Date();
+        const lastChange = currentUser.lastUsernameChange ? new Date(currentUser.lastUsernameChange) : null;
+        const sevenDays = 7 * 24 * 60 * 60 * 1000;
+
+        if (lastChange && (now.getTime() - lastChange.getTime() < sevenDays)) {
+            return { error: 'Username can only be changed once every 7 days.' };
+        }
+        
+        updatesPayload.username = updates.username;
+        updatesPayload.last_username_change = now.toISOString();
+    }
+
     try {
-        await supabase.from('profiles').update({ 
-            bio: updates.bio.slice(0, 160),
-            current_activity: updates.currentActivity,
-            last_seen: new Date().toISOString()
-        }).eq('id', userId);
-    } catch(e) { console.error(e); }
-  }, [currentAuthId]);
+        const { error } = await supabase.from('profiles').update(updatesPayload).eq('id', userId);
+        
+        if (error) {
+            // Check for unique violation (code 23505 in Postgres)
+            if (error.code === '23505') {
+                return { error: 'Username already taken. Please choose another.' };
+            }
+            throw error;
+        }
+        return {};
+    } catch(e: any) { 
+        console.error(e);
+        return { error: e.message || 'Failed to update profile' };
+    }
+  }, [currentAuthId, users]);
   
   const toggleFavorite = useCallback(async (userId: string, postId: number) => {
      if(userId !== currentAuthId) return;

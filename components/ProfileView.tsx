@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Post, User, Event } from '../types';
@@ -79,7 +80,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     return posts.filter(p => (profileUser.favoritePostIds || []).includes(p.id));
   }, [posts, profileUser.favoritePostIds]);
 
-  const userName = profileUser.id === 'user-you' ? t('post.user.you') : profileUser.name;
+  // Display username (handle) primarily, name as secondary
+  const handle = profileUser.id === 'user-you' ? t('post.user.you') : (profileUser.username || profileUser.name);
+  const displayName = profileUser.name;
+  
   const lastSeenText = formatLastSeen(profileUser.lastSeen, t);
   const currentProfileActivity = profileUser.currentActivity ? ACTIVITY_CONFIG[profileUser.currentActivity] : null;
   const userLiveEvent = liveEvents.find(e => e.creatorId === profileUser.id);
@@ -110,10 +114,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 </div>
                 
                 <div className="flex-grow w-full">
-                  <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">@{userName}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{lastSeenText}</p>
+                  <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">@{handle}</h3>
+                  <div className="flex items-center justify-center sm:justify-start gap-2 mb-3">
+                       {profileUser.name && <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{displayName}</span>}
+                       <span className="text-xs text-gray-500 dark:text-gray-400">&bull; {lastSeenText}</span>
+                  </div>
                   
-                  <div className="flex justify-center sm:justify-start items-center gap-4 text-gray-600 dark:text-gray-400 text-sm border-t border-b border-gray-100 dark:border-slate-700 py-2">
+                  <div className="flex justify-center sm:justify-start items-center gap-4 text-gray-600 dark:text-gray-400 text-sm border-t border-b border-gray-100 dark:border-slate-700 py-2 mb-4">
                     <div><span className="font-bold text-lg text-gray-800 dark:text-gray-200">{userPosts.length}</span> {t('profile.tabs.stories')}</div>
                     <div className="border-l h-5 border-gray-200 dark:border-slate-600"></div>
                     <div><span className="font-bold text-lg text-gray-800 dark:text-gray-200">{profileUser.followers.length}</span> {t('profile.followers')}</div>
@@ -121,19 +128,20 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     <div><span className="font-bold text-lg text-gray-800 dark:text-gray-200">{profileUser.following.length}</span> {t('profile.followingCount')}</div>
                   </div>
 
-                  {profileUser.bio && <p className="text-sm text-gray-700 dark:text-gray-300 mt-4">{profileUser.bio}</p>}
-
-                  {currentProfileActivity && (
-                      <div className="mt-4">
-                          <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-1">{t('profile.currently')}</p>
-                          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold bg-brand-50 dark:bg-slate-700/50 border border-brand-200 dark:border-slate-700">
+                  {/* Activity and Bio Row */}
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                       {currentProfileActivity && (
+                          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold bg-brand-50 dark:bg-slate-700/50 border border-brand-200 dark:border-slate-700 flex-shrink-0">
                               <span className={`flex items-center justify-center h-6 w-6 rounded-md ${currentProfileActivity.colorClasses}`}>
                                   <currentProfileActivity.icon size={14} />
                               </span>
                               <span className="text-gray-800 dark:text-gray-200">{t(`activity.${profileUser.currentActivity!}` as any)}</span>
                           </div>
-                      </div>
-                  )}
+                      )}
+                      {profileUser.bio && (
+                        <p className="text-sm text-gray-600 dark:text-gray-300 italic">"{profileUser.bio}"</p>
+                      )}
+                  </div>
 
                   <div className="mt-6 flex justify-center sm:justify-start flex-wrap gap-3">
                     {!isCurrentUserProfile ? (
