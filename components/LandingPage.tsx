@@ -155,7 +155,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
         )}
       </AnimatePresence>
 
-      <div className="w-full max-w-md z-10 relative backdrop-blur-sm bg-white/5 rounded-3xl border border-white/10 p-8 shadow-2xl">
+      <div className="w-full max-w-sm z-10 relative backdrop-blur-sm bg-white/5 rounded-3xl border border-white/10 p-6 shadow-2xl">
         <AnimatePresence mode="wait">
           {view === 'landing' && (
             <motion.div
@@ -165,24 +165,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
               exit={{ opacity: 0, y: -20 }}
               className="flex flex-col items-center text-center"
             >
-              <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-2 drop-shadow-lg">SEEST</h1>
-              <p className="text-xl md:text-2xl font-light mb-12 tracking-widest uppercase opacity-90">Ephemeral Status</p>
+              <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-2 drop-shadow-lg">SEEST</h1>
+              <p className="text-lg font-light mb-8 tracking-widest uppercase opacity-90">Ephemeral Status</p>
               
-              <div className="w-full space-y-4">
+              <div className="w-full space-y-3">
                 <button 
                   onClick={() => setView('login')}
-                  className="w-full py-4 bg-white text-brand-600 text-xl font-bold rounded-full hover:bg-gray-100 transition-transform active:scale-95 shadow-lg"
+                  className="w-full py-3 bg-white text-brand-600 text-lg font-bold rounded-full hover:bg-gray-100 transition-transform active:scale-95 shadow-lg"
                 >
                   MASUK
                 </button>
                 <button 
                   onClick={() => setView('register')}
-                  className="w-full py-4 bg-transparent border-2 border-white text-white text-xl font-bold rounded-full hover:bg-white/10 transition-transform active:scale-95"
+                  className="w-full py-3 bg-transparent border-2 border-white text-white text-lg font-bold rounded-full hover:bg-white/10 transition-transform active:scale-95"
                 >
                   DAFTAR
                 </button>
               </div>
-              <div className="mt-10 text-xs opacity-50">
+              <div className="mt-8 text-[10px] opacity-50">
                   <p>Versi 1.0.0 &bull; 2025</p>
               </div>
             </motion.div>
@@ -196,63 +196,63 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
               exit={{ opacity: 0, x: -50 }}
               className="w-full"
             >
-              <button onClick={() => { setView('landing'); setError(''); }} className="mb-6 flex items-center gap-2 text-sm font-semibold hover:opacity-80">
-                <ArrowLeft size={20} /> KEMBALI
+              <button onClick={() => { setView('landing'); setError(''); }} className="mb-4 flex items-center gap-2 text-xs font-semibold hover:opacity-80">
+                <ArrowLeft size={16} /> KEMBALI
               </button>
               
-              <h2 className="text-3xl font-bold mb-1">Selamat Datang</h2>
-              <p className="text-white/70 mb-8 text-sm">Masuk untuk melihat cerita temanmu.</p>
+              <h2 className="text-2xl font-bold mb-1">Selamat Datang</h2>
+              <p className="text-white/70 mb-6 text-xs">Masuk untuk melihat cerita temanmu.</p>
 
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={handleLogin} className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase tracking-wider ml-1 opacity-80">Email</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">Email</label>
                   <input 
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="nama@email.com"
-                    className="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
+                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase tracking-wider ml-1 opacity-80">Password</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">Password</label>
                   <div className="relative">
                     <input 
                       type={showPassword ? "text" : "password"} 
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Password Anda"
-                      className="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
+                      className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
                     />
                     <button 
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-white/70 hover:text-white"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-white/70 hover:text-white"
                     >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                   <div className="flex justify-end">
-                     <button type="button" onClick={() => setView('forgot')} className="text-xs font-semibold text-white/70 hover:text-white mt-2 underline decoration-dotted">
+                     <button type="button" onClick={() => setView('forgot')} className="text-[10px] font-semibold text-white/70 hover:text-white mt-1 underline decoration-dotted">
                          Lupa Password?
                      </button>
                   </div>
                 </div>
 
-                {error && <p className="text-yellow-300 text-sm font-semibold bg-white/10 p-3 rounded-lg text-center">{error}</p>}
+                {error && <p className="text-yellow-300 text-xs font-semibold bg-white/10 p-2 rounded-lg text-center">{error}</p>}
 
                 <button 
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3 bg-white text-brand-600 text-lg font-bold rounded-2xl hover:bg-gray-100 transition-all shadow-lg mt-4 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="w-full py-2.5 bg-white text-brand-600 text-base font-bold rounded-xl hover:bg-gray-100 transition-all shadow-lg mt-2 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? 'MEMUAT...' : 'MASUK'} <ChevronRight size={20} />
+                  {isLoading ? 'MEMUAT...' : 'MASUK'} <ChevronRight size={18} />
                 </button>
               </form>
-              <div className="mt-6 text-center">
-                  <span className="text-white/60 text-sm">Belum punya akun? </span>
-                  <button onClick={() => { setView('register'); setError(''); }} className="font-bold underline">Daftar</button>
+              <div className="mt-4 text-center">
+                  <span className="text-white/60 text-xs">Belum punya akun? </span>
+                  <button onClick={() => { setView('register'); setError(''); }} className="font-bold underline text-xs">Daftar</button>
               </div>
             </motion.div>
           )}
@@ -265,69 +265,69 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
               exit={{ opacity: 0, x: -50 }}
               className="w-full"
             >
-              <button onClick={() => { setView('landing'); setError(''); }} className="mb-6 flex items-center gap-2 text-sm font-semibold hover:opacity-80">
-                <ArrowLeft size={20} /> KEMBALI
+              <button onClick={() => { setView('landing'); setError(''); }} className="mb-4 flex items-center gap-2 text-xs font-semibold hover:opacity-80">
+                <ArrowLeft size={16} /> KEMBALI
               </button>
               
-              <h2 className="text-3xl font-bold mb-1">Buat Akun</h2>
-              <p className="text-white/70 mb-8 text-sm">Gabung komunitas SEEST sekarang.</p>
+              <h2 className="text-2xl font-bold mb-1">Buat Akun</h2>
+              <p className="text-white/70 mb-6 text-xs">Gabung komunitas SEEST sekarang.</p>
 
-              <form onSubmit={handleRegister} className="space-y-4">
+              <form onSubmit={handleRegister} className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase tracking-wider ml-1 opacity-80">Nama Lengkap</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">Nama Lengkap</label>
                   <input 
                     type="text" 
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Nama Anda"
-                    className="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
+                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase tracking-wider ml-1 opacity-80">Email</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">Email</label>
                   <input 
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="nama@email.com"
-                    className="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
+                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase tracking-wider ml-1 opacity-80">Password</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">Password</label>
                   <div className="relative">
                     <input 
                       type={showPassword ? "text" : "password"} 
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Buat password aman"
-                      className="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
+                      className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
                     />
                      <button 
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-white/70 hover:text-white"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-white/70 hover:text-white"
                     >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                 </div>
 
-                {error && <p className="text-yellow-300 text-sm font-semibold bg-white/10 p-3 rounded-lg text-center">{error}</p>}
+                {error && <p className="text-yellow-300 text-xs font-semibold bg-white/10 p-2 rounded-lg text-center">{error}</p>}
 
                 <button 
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3 bg-white text-brand-600 text-lg font-bold rounded-2xl hover:bg-gray-100 transition-all shadow-lg mt-4 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="w-full py-2.5 bg-white text-brand-600 text-base font-bold rounded-xl hover:bg-gray-100 transition-all shadow-lg mt-2 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {isLoading ? 'MEMPROSES...' : 'DAFTAR AKUN'}
                 </button>
               </form>
-               <div className="mt-6 text-center">
-                  <span className="text-white/60 text-sm">Sudah punya akun? </span>
-                  <button onClick={() => { setView('login'); setError(''); }} className="font-bold underline">Masuk</button>
+               <div className="mt-4 text-center">
+                  <span className="text-white/60 text-xs">Sudah punya akun? </span>
+                  <button onClick={() => { setView('login'); setError(''); }} className="font-bold underline text-xs">Masuk</button>
               </div>
             </motion.div>
           )}
@@ -340,30 +340,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
               exit={{ opacity: 0, x: -50 }}
               className="w-full"
             >
-              <button onClick={() => { setView('login'); setError(''); }} className="mb-6 flex items-center gap-2 text-sm font-semibold hover:opacity-80">
-                <ArrowLeft size={20} /> KEMBALI
+              <button onClick={() => { setView('login'); setError(''); }} className="mb-4 flex items-center gap-2 text-xs font-semibold hover:opacity-80">
+                <ArrowLeft size={16} /> KEMBALI
               </button>
               
-              <h2 className="text-3xl font-bold mb-1">Lupa Password?</h2>
-              <p className="text-white/70 mb-8 text-sm">Masukkan email untuk reset password.</p>
+              <h2 className="text-2xl font-bold mb-1">Lupa Password?</h2>
+              <p className="text-white/70 mb-6 text-xs">Masukkan email untuk reset password.</p>
 
-              <form onSubmit={handleForgot} className="space-y-4">
+              <form onSubmit={handleForgot} className="space-y-3">
                  <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase tracking-wider ml-1 opacity-80">Email</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">Email</label>
                   <input 
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="nama@email.com"
-                    className="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
+                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
                   />
                 </div>
-                 {error && <p className="text-yellow-300 text-sm font-semibold bg-white/10 p-3 rounded-lg text-center">{error}</p>}
+                 {error && <p className="text-yellow-300 text-xs font-semibold bg-white/10 p-2 rounded-lg text-center">{error}</p>}
 
                 <button 
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3 bg-white text-brand-600 text-lg font-bold rounded-2xl hover:bg-gray-100 transition-all shadow-lg mt-4 disabled:opacity-70"
+                  className="w-full py-2.5 bg-white text-brand-600 text-base font-bold rounded-xl hover:bg-gray-100 transition-all shadow-lg mt-2 disabled:opacity-70"
                 >
                   {isLoading ? 'MENGIRIM...' : 'KIRIM LINK RESET'}
                 </button>
