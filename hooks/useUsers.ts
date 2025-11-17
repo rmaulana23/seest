@@ -154,15 +154,19 @@ export const useUsers = () => {
      if(!currentAuthId) return;
      try {
          await supabase.from('follows').insert({ follower_id: currentAuthId, following_id: targetId });
+         // Force immediate refresh to update UI faster than realtime
+         fetchData();
      } catch(e) { console.error(e); }
-  }, [currentAuthId]);
+  }, [currentAuthId, fetchData]);
 
   const unfollowUser = useCallback(async (targetId: string) => {
      if(!currentAuthId) return;
      try {
         await supabase.from('follows').delete().match({ follower_id: currentAuthId, following_id: targetId });
+        // Force immediate refresh
+        fetchData();
      } catch(e) { console.error(e); }
-  }, [currentAuthId]);
+  }, [currentAuthId, fetchData]);
   
   const updateUserProfile = useCallback(async (userId: string, updates: { bio: string, currentActivity: Activity, username?: string }): Promise<{error?: string}> => {
     if (userId !== currentAuthId) return { error: 'Unauthorized' };
@@ -198,12 +202,13 @@ export const useUsers = () => {
             }
             throw error;
         }
+        fetchData();
         return {};
     } catch(e: any) { 
         console.error(e);
         return { error: e.message || 'Failed to update profile' };
     }
-  }, [currentAuthId, users]);
+  }, [currentAuthId, users, fetchData]);
   
   const toggleFavorite = useCallback(async (userId: string, postId: number) => {
      if(userId !== currentAuthId) return;
@@ -216,15 +221,17 @@ export const useUsers = () => {
          } else {
              await supabase.from('saved_posts').insert({ user_id: userId, post_id: postId });
          }
+         fetchData();
      } catch(e) { console.error(e); }
-  }, [currentAuthId, users]);
+  }, [currentAuthId, users, fetchData]);
 
   const updateUserVisibility = useCallback(async (userId: string, visibility: 'private' | 'public') => {
      if(userId !== currentAuthId) return;
      try {
          await supabase.from('profiles').update({ saved_posts_visibility: visibility }).eq('id', userId);
+         fetchData();
      } catch(e) { console.error(e); }
-  }, [currentAuthId]);
+  }, [currentAuthId, fetchData]);
 
 
   const currentUser = useMemo(() => users.find(u => u.id === currentAuthId), [users, currentAuthId]);

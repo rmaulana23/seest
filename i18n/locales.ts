@@ -1,4 +1,5 @@
 
+
 export const locales = {
   id: {
     // Header
@@ -42,6 +43,8 @@ export const locales = {
     // Stories Reel
     "stories.title": "Cerita Temanmu",
     "stories.empty": "Saat ini tidak ada cerita dari teman.",
+    "stories.empty.action": "Cari Teman Mutual",
+    "stories.empty.desc": "Mutualan agar cerita mereka muncul di sini!",
 
     // Post Card
     "post.user.you": "Kamu",
@@ -323,6 +326,8 @@ export const locales = {
     // Stories Reel
     "stories.title": "Circle's Stories",
     "stories.empty": "No friend stories are available right now.",
+    "stories.empty.action": "Find Mutual Friends",
+    "stories.empty.desc": "Connect so their stories appear here!",
 
     // Post Card
     "post.user.you": "You",

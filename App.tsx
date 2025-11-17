@@ -301,12 +301,14 @@ export default function App() {
     const userIds = [...new Set(statusPosts.map(p => p.userId))];
     const storyUsers = userIds.map(id => users.find(u => u.id === id)).filter((u): u is User => !!u);
     
-    storyUsers.sort((a, b) => {
-        if (a.id === currentUser.id) return -1;
-        if (b.id === currentUser.id) return 1;
-        return 0; 
+    // FILTER: Only show stories from friends/mutuals, NOT the current user
+    const friendStories = storyUsers.filter(u => u.id !== currentUser.id);
+
+    friendStories.sort((a, b) => {
+        // Simple sort by name for now since date sorting logic was complex here
+        return a.name.localeCompare(b.name);
     });
-    return storyUsers;
+    return friendStories;
   }, [statusPosts, users, currentUser]);
 
   const conversationMessages = useMemo(() => {
@@ -494,7 +496,12 @@ export default function App() {
                     {page === 'home' && currentUser && (
                       <div className="max-w-2xl mx-auto">
                         <div className="px-4 sm:px-8">
-                          <StoryReel usersWithStories={usersWithStories} posts={statusPosts} onViewStory={setViewingStoryForUserIndex} />
+                          <StoryReel 
+                             usersWithStories={usersWithStories} 
+                             posts={statusPosts} 
+                             onViewStory={setViewingStoryForUserIndex} 
+                             onNavigateToFriends={() => navigateTo('friends')}
+                          />
                         </div>
                         <div className="space-y-6 px-4 sm:px-8 pt-6">
                           {isLoading && <div className="text-center p-8 text-gray-500 dark:text-gray-400">{t('app.loading')}</div>}
