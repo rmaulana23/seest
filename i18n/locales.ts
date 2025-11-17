@@ -1,5 +1,4 @@
 
-
 export const locales = {
   id: {
     // Header
@@ -220,7 +219,6 @@ export const locales = {
     "comingSoon.title": "Segera Hadir!",
     "comingSoon.description": "Fitur ini sedang dalam pengembangan dan akan segera tersedia. Nantikan pembaruannya!",
 
-
     // Settings
     "settings.title": "Pengaturan",
     "settings.appearance.title": "Tampilan",
@@ -247,6 +245,14 @@ export const locales = {
     "terms.p2": "Dengan menggunakan layanan kami, Anda setuju dengan syarat-syarat ini. Harap baca dengan saksama.",
     "terms.p3": "Perilaku Pengguna: Anda bertanggung jawab atas konten yang Anda posting. Jangan memposting konten yang melanggar hukum, penuh kebencian, atau melanggar hak orang lain.",
     "terms.p4": "Penafian: Layanan disediakan \"sebagaimana adanya\" tanpa jaminan apa pun. Kami tidak bertanggung jawab atas konten pengguna atau tindakan pengguna lain.",
+
+    // Authentication
+    "auth.signUp.success.title": "Pendaftaran Berhasil",
+    "auth.signUp.success.message": "Silakan cek email Anda untuk konfirmasi akun sebelum masuk.",
+    "auth.signUp.success.button": "OK, Saya Cek Email",
+    "auth.error.generic": "Terjadi kesalahan. Silakan coba lagi.",
+    "auth.error.userAlreadyExists": "Pengguna sudah terdaftar.",
+    "auth.forgotPassword.success": "Link reset password telah dikirim ke email Anda.",
 
     // Activities
     "activity.Relaxing": "Santai",
@@ -493,7 +499,7 @@ export const locales = {
     "common.backToSettings": "Back to Settings",
     "comingSoon.title": "Coming Soon!",
     "comingSoon.description": "This feature is currently under development and will be available shortly. Stay tuned!",
-    
+
     // Settings
     "settings.title": "Settings",
     "settings.appearance.title": "Appearance",
@@ -520,6 +526,14 @@ export const locales = {
     "terms.p2": "By using our service, you agree to these terms. Please read them carefully.",
     "terms.p3": "User Conduct: You are responsible for the content you post. Do not post content that is unlawful, hateful, or infringes on the rights of others.",
     "terms.p4": "Disclaimer: The service is provided \"as is\" without any warranties. We are not responsible for user-generated content or the actions of other users.",
+
+    // Authentication
+    "auth.signUp.success.title": "Registration Successful",
+    "auth.signUp.success.message": "Please check your email to confirm your account before logging in.",
+    "auth.signUp.success.button": "OK, I'll Check My Email",
+    "auth.error.generic": "An error occurred. Please try again.",
+    "auth.error.userAlreadyExists": "User already exists.",
+    "auth.forgotPassword.success": "Password reset link sent to your email.",
 
     // Activities
     "activity.Relaxing": "Relaxing",

@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Page, Activity, Post, User, PrivateMessage, Event, EventMessage } from './types';
@@ -32,6 +33,7 @@ import { CURRENT_USER_ID } from './constants';
 import { ComingSoonView } from './components/ComingSoonView';
 import { MediaViewerModal } from './components/MediaViewerModal';
 import { LandingPage } from './components/LandingPage';
+import { supabase } from './lib/supabase';
 
 
 const MainContent: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -46,8 +48,6 @@ const MainContent: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     </motion.main>
 );
 
-const AUTH_SESSION_KEY = 'seest_auth_session_v2';
-
 export default function App() {
   // Auth State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -56,16 +56,29 @@ export default function App() {
   // Data Hooks
   const { users, currentUser: loadedCurrentUser, followUser, unfollowUser, updateUserProfile, toggleFavorite, updateUserVisibility, addUser, isLoading: usersLoading } = useUsers();
   
-  // Verify Auth on Mount
+  // Supabase Auth Listener
   useEffect(() => {
-      const storedAuth = localStorage.getItem(AUTH_SESSION_KEY);
-      if (storedAuth) {
-          const { userId } = JSON.parse(storedAuth);
-          if (userId) {
-              setAuthUserId(userId);
+      // Check active session
+      supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session) {
+              setAuthUserId(session.user.id);
               setIsAuthenticated(true);
           }
-      }
+      });
+
+      // Listen for auth changes
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+          if (session) {
+              setAuthUserId(session.user.id);
+              setIsAuthenticated(true);
+          } else {
+              setAuthUserId(null);
+              setIsAuthenticated(false);
+              setPage('home');
+          }
+      });
+
+      return () => subscription.unsubscribe();
   }, []);
 
   // Derived Current User based on Auth
@@ -101,38 +114,31 @@ export default function App() {
 
   const isLoading = postsLoading || usersLoading || messagesLoading || eventsLoading;
 
-  // --- Auth Handlers ---
+  // --- Auth Handlers (Supabase) ---
 
-  const handleLogin = (user: User) => {
-      setAuthUserId(user.id);
-      setIsAuthenticated(true);
-      localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({ userId: user.id }));
+  const handleLogin = async (email: string, pass: string) => {
+      return await supabase.auth.signInWithPassword({ email, password: pass });
   };
 
-  const handleRegister = (name: string, email: string, password: string) => {
-      const newUser: User = {
-          id: `user-${Date.now()}`,
-          name,
-          email,
+  const handleRegister = async (name: string, email: string, password: string) => {
+      return await supabase.auth.signUp({ 
+          email, 
           password,
-          avatar: name.charAt(0).toUpperCase(),
-          following: [],
-          followers: [],
-          bio: `Hi, I'm ${name}!`,
-          lastSeen: new Date().toISOString(),
-          currentActivity: 'Relaxing',
-          savedPostsVisibility: 'private',
-          favoritePostIds: []
-      };
-      addUser(newUser);
-      handleLogin(newUser);
+          options: {
+              data: {
+                  name: name,
+                  avatar: name.charAt(0).toUpperCase()
+              }
+          }
+      });
   };
 
-  const handleLogout = () => {
-      setIsAuthenticated(false);
-      setAuthUserId(null);
-      localStorage.removeItem(AUTH_SESSION_KEY);
-      setPage('home');
+  const handleResetPassword = async (email: string) => {
+      return await supabase.auth.resetPasswordForEmail(email);
+  };
+
+  const handleLogout = async () => {
+      await supabase.auth.signOut();
   };
   
   // --- Simulation for Notifications ---
@@ -178,7 +184,7 @@ export default function App() {
               if (options.userId) {
                   const user = users.find(u => u.id === options.userId);
                   if (user) {
-                      const profileName = user.id === CURRENT_USER_ID ? 'kamu' : user.name.toLowerCase();
+                      const profileName = user.id === currentUser?.id ? 'kamu' : user.name.toLowerCase();
                       window.location.hash = `/@${profileName}`;
                   }
               }
@@ -206,7 +212,7 @@ export default function App() {
           default:
               window.location.hash = `/${page}`;
       }
-  }, [users]);
+  }, [users, currentUser]);
 
   const parseHashAndNavigate = useCallback(() => {
       if (users.length === 0) return;
@@ -228,7 +234,7 @@ export default function App() {
 
       if (hash.startsWith('/@')) {
           const username = hash.substring(2);
-          const user = users.find(u => (u.id === CURRENT_USER_ID ? 'kamu' : u.name.toLowerCase()) === username);
+          const user = users.find(u => (u.id === currentUser?.id ? 'kamu' : u.name.toLowerCase()) === username);
           if (user) {
               setViewingProfileFor(user.id);
               setPage('profile');
@@ -271,7 +277,7 @@ export default function App() {
           default:
               navigateTo('home');
       }
-  }, [users, navigateTo, events, eventsLoading]);
+  }, [users, navigateTo, events, eventsLoading, currentUser]);
 
   useEffect(() => {
       if (!usersLoading && isAuthenticated) {
@@ -294,7 +300,7 @@ export default function App() {
   const statusPosts = useMemo(() => {
     if (!currentUser) return [];
     const idsToShow = [currentUser.id, ...mutuals];
-    
+    // Filter posts. Note: Supabase posts will be implemented later, for now usePosts is still local
     const allStatusPosts = posts.filter(p => p.postType === 'status' && idsToShow.includes(p.userId));
     
     if (!activityFilter) return allStatusPosts;
@@ -305,19 +311,14 @@ export default function App() {
   
   const usersWithStories = useMemo(() => {
     if (!currentUser) return [];
-    // Get unique user IDs from the status posts that are already filtered for mutuals.
     const userIds = [...new Set(statusPosts.map(p => p.userId))];
-    
-    // Map IDs to full user objects.
     const storyUsers = userIds.map(id => users.find(u => u.id === id)).filter((u): u is User => !!u);
     
-    // Sort to ensure the current user always appears first if they have a story.
     storyUsers.sort((a, b) => {
         if (a.id === currentUser.id) return -1;
         if (b.id === currentUser.id) return 1;
         return 0; 
     });
-    
     return storyUsers;
   }, [statusPosts, users, currentUser]);
 
@@ -440,13 +441,16 @@ export default function App() {
           <LandingPage 
               users={users} 
               onLogin={handleLogin} 
-              onRegister={handleRegister} 
+              onRegister={handleRegister}
+              onResetPassword={handleResetPassword}
           />
       );
   }
-
+  
+  // Render the existing app...
   return (
     <div className="min-h-screen text-gray-800 dark:text-gray-200 font-sans">
+      {/* ... all other components remain the same ... */}
       <Header 
         currentUser={currentUser}
         users={users}
@@ -495,7 +499,8 @@ export default function App() {
                   </motion.div>
                 ) : (
                   <MainContent key={page + (viewingProfileFor || '')}>
-                    {page === 'home' && currentUser ? (
+                    {/* Page content rendering logic... */}
+                    {page === 'home' && currentUser && (
                       <div className="max-w-2xl mx-auto">
                         <div className="px-4 sm:px-8">
                           <StoryReel usersWithStories={usersWithStories} posts={statusPosts} onViewStory={setViewingStoryForUserIndex} />
@@ -543,14 +548,17 @@ export default function App() {
                                 </motion.div>
                             ))}
                           </AnimatePresence>
-                          {!isLoading && statusPosts.length > 0 && (
+                           {!isLoading && statusPosts.length > 0 && (
                             <footer className="text-center text-sm text-gray-400 dark:text-gray-500">
                               <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
                             </footer>
                           )}
                         </div>
                       </div>
-                    ) : (
+                    )}
+                     
+                    {/* Other pages (friends, events, etc) */}
+                    {page !== 'home' && page !== 'event-room' && (
                       <div className="p-4 sm:p-8 h-full">
                         {page === "events" && <ComingSoonView />}
 
@@ -566,6 +574,7 @@ export default function App() {
 
                         {page === "ask" && currentUser && (
                           <div className="max-w-2xl mx-auto space-y-6">
+                            {/* Ask Page Content */}
                             <div className="flex justify-between items-start">
                               <div>
                                 <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{t('ask.title')}</h2>
@@ -642,8 +651,7 @@ export default function App() {
                         
                         {page === "settings" && (
                             <div className="max-w-2xl mx-auto bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-xl dark:border dark:border-slate-700 space-y-6">
-                                {/* ... settings content same as before ... */}
-                                 <h2 className="text-xl font-bold mb-2 text-gray-800 dark:text-gray-100">{t('settings.title')}</h2>
+                                <h2 className="text-xl font-bold mb-2 text-gray-800 dark:text-gray-100">{t('settings.title')}</h2>
                                 <div className="space-y-4">
                                   <div className="flex items-center justify-between p-4 bg-brand-50 dark:bg-slate-700/50 rounded-lg">
                                     <div>

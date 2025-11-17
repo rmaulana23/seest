@@ -2,12 +2,14 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User } from '../types';
-import { Eye, EyeOff, ArrowLeft, ChevronRight } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft, ChevronRight, Mail, CheckCircle } from 'lucide-react';
+import { useTranslation } from '../contexts/LanguageContext';
 
 interface LandingPageProps {
   users: User[];
-  onLogin: (user: User) => void;
-  onRegister: (name: string, email: string, password: string) => void;
+  onLogin: (email: string, pass: string) => Promise<any>;
+  onRegister: (name: string, email: string, password: string) => Promise<any>;
+  onResetPassword: (email: string) => Promise<any>;
 }
 
 type ViewState = 'landing' | 'login' | 'register' | 'forgot';
@@ -19,17 +21,13 @@ const BackgroundTypography = () => {
       "STORY", "24H", "MOMENT", "CIRCLE", "LIVE", "SHARE", 
       "EPHEMERAL", "NOW", "FRIENDS", "CHAT", "REAL"
     ];
-    // Generate a fixed set of random typography elements
     return Array.from({ length: 60 }).map((_, i) => ({
       id: i,
       text: words[Math.floor(Math.random() * words.length)],
       top: Math.floor(Math.random() * 100),
       left: Math.floor(Math.random() * 100),
-      // Varying sizes for typography effect
       fontSize: Math.floor(Math.random() * 60) + 12 + 'px',
-      // Low opacity for background texture
       opacity: (Math.floor(Math.random() * 15) + 2) / 100,
-      // Mostly facing up (-90deg), some horizontal (0deg) for randomness
       rotate: Math.random() > 0.7 ? 0 : -90,
       fontWeight: Math.random() > 0.5 ? 900 : 400,
     }));
@@ -49,13 +47,12 @@ const BackgroundTypography = () => {
               transform: `rotate(${item.rotate}deg) translate(-50%, -50%)`,
               fontFamily: 'Poppins, sans-serif',
               fontWeight: item.fontWeight,
-              textShadow: '2px 4px 6px rgba(0,0,0,0.3)' // "Berbayang" effect
+              textShadow: '2px 4px 6px rgba(0,0,0,0.3)'
             }}
          >
            {item.text}
          </div>
        ))}
-       {/* Large anchor text */}
        <div className="absolute -bottom-20 -left-20 text-[15vw] font-black text-white opacity-5 rotate-0 pointer-events-none">
           SEEST
        </div>
@@ -66,27 +63,29 @@ const BackgroundTypography = () => {
   );
 };
 
-export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegister }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegister, onResetPassword }) => {
+  const { t } = useTranslation();
   const [view, setView] = useState<ViewState>('landing');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
-    const user = users.find(u => u.email === email && u.password === password);
-    if (user) {
-      onLogin(user);
-    } else {
-      setError('Email atau password salah.');
+    setIsLoading(true);
+    const { error } = await onLogin(email, password);
+    setIsLoading(false);
+    if (error) {
+      setError(error.message || t('auth.error.generic'));
     }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     
@@ -94,27 +93,67 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
       setError('Mohon isi semua data.');
       return;
     }
-
-    const existing = users.find(u => u.email === email);
-    if (existing) {
-      setError('Email sudah terdaftar.');
-      return;
+    
+    setIsLoading(true);
+    const { error } = await onRegister(name, email, password);
+    setIsLoading(false);
+    
+    if (error) {
+      setError(error.message || t('auth.error.generic'));
+    } else {
+      setShowConfirmModal(true);
     }
-
-    onRegister(name, email, password);
   };
   
-  const handleForgot = (e: React.FormEvent) => {
+  const handleForgot = async (e: React.FormEvent) => {
       e.preventDefault();
-      // Mock functionality
-      alert(`Link reset password telah dikirim ke ${email}`);
-      setView('login');
+      setError('');
+      setIsLoading(true);
+      const { error } = await onResetPassword(email);
+      setIsLoading(false);
+      if(error) {
+          setError(error.message);
+      } else {
+          alert(t('auth.forgotPassword.success'));
+          setView('login');
+      }
   }
 
   return (
     <div className="h-screen w-screen overflow-hidden bg-brand-600 flex flex-col items-center justify-center text-white font-sans p-6 relative">
       
       <BackgroundTypography />
+      
+      {/* Confirmation Modal */}
+      <AnimatePresence>
+        {showConfirmModal && (
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+            >
+                <motion.div 
+                    initial={{ scale: 0.9, y: 20 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ scale: 0.9, y: 20 }}
+                    className="bg-white text-gray-800 rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl"
+                >
+                    <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <CheckCircle size={32} />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-2">{t('auth.signUp.success.title')}</h3>
+                    <p className="text-gray-600 mb-6">{t('auth.signUp.success.message')}</p>
+                    <button 
+                        onClick={() => { setShowConfirmModal(false); setView('login'); }}
+                        className="w-full py-3 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition-colors"
+                    >
+                        {t('auth.signUp.success.button')}
+                    </button>
+                </motion.div>
+            </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="w-full max-w-md z-10 relative backdrop-blur-sm bg-white/5 rounded-3xl border border-white/10 p-8 shadow-2xl">
         <AnimatePresence mode="wait">
@@ -205,19 +244,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
 
                 <button 
                   type="submit"
-                  className="w-full py-3 bg-white text-brand-600 text-lg font-bold rounded-2xl hover:bg-gray-100 transition-all shadow-lg mt-4 flex items-center justify-center gap-2"
+                  disabled={isLoading}
+                  className="w-full py-3 bg-white text-brand-600 text-lg font-bold rounded-2xl hover:bg-gray-100 transition-all shadow-lg mt-4 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  MASUK <ChevronRight size={20} />
+                  {isLoading ? 'MEMUAT...' : 'MASUK'} <ChevronRight size={20} />
                 </button>
               </form>
               <div className="mt-6 text-center">
                   <span className="text-white/60 text-sm">Belum punya akun? </span>
                   <button onClick={() => { setView('register'); setError(''); }} className="font-bold underline">Daftar</button>
               </div>
-               {/* Quick Hint for Demo */}
-               <div className="mt-6 text-center text-xs text-white/30 bg-black/20 p-2 rounded-lg">
-                  <p>Dummy: user@seest.com / password123</p>
-               </div>
             </motion.div>
           )}
 
@@ -283,9 +319,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
 
                 <button 
                   type="submit"
-                  className="w-full py-3 bg-white text-brand-600 text-lg font-bold rounded-2xl hover:bg-gray-100 transition-all shadow-lg mt-4 flex items-center justify-center gap-2"
+                  disabled={isLoading}
+                  className="w-full py-3 bg-white text-brand-600 text-lg font-bold rounded-2xl hover:bg-gray-100 transition-all shadow-lg mt-4 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  DAFTAR AKUN
+                  {isLoading ? 'MEMPROSES...' : 'DAFTAR AKUN'}
                 </button>
               </form>
                <div className="mt-6 text-center">
@@ -321,11 +358,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
                     className="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
                   />
                 </div>
+                 {error && <p className="text-yellow-300 text-sm font-semibold bg-white/10 p-3 rounded-lg text-center">{error}</p>}
+
                 <button 
                   type="submit"
-                  className="w-full py-3 bg-white text-brand-600 text-lg font-bold rounded-2xl hover:bg-gray-100 transition-all shadow-lg mt-4"
+                  disabled={isLoading}
+                  className="w-full py-3 bg-white text-brand-600 text-lg font-bold rounded-2xl hover:bg-gray-100 transition-all shadow-lg mt-4 disabled:opacity-70"
                 >
-                  KIRIM LINK RESET
+                  {isLoading ? 'MENGIRIM...' : 'KIRIM LINK RESET'}
                 </button>
               </form>
             </motion.div>
