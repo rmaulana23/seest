@@ -53,7 +53,10 @@ export const ActivityFilter: React.FC<ActivityFilterProps> = ({ activityFilter, 
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-slate-700 rounded-lg shadow-xl border border-gray-100 dark:border-slate-600 z-30 overflow-hidden"
+            className={isHeader 
+              ? "fixed left-4 right-4 top-20 w-auto md:absolute md:top-full md:right-0 md:w-56 md:left-auto z-50 bg-white dark:bg-slate-700 rounded-lg shadow-xl border border-gray-100 dark:border-slate-600 overflow-hidden"
+              : "absolute top-full right-0 mt-2 w-56 bg-white dark:bg-slate-700 rounded-lg shadow-xl border border-gray-100 dark:border-slate-600 z-30 overflow-hidden"
+            }
           >
             <button
               onClick={() => handleSelect(null)}

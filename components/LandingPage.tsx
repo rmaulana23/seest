@@ -128,8 +128,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
       <BackgroundTypography />
       
       {/* Top Left Logo */}
-      <div className="absolute top-6 left-6 z-50">
-         <img src="https://i.imgur.com/e00ntr3.jpg" alt="SEEST Logo" className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md shadow-xl border border-white/20" />
+      <div className="absolute top-6 left-6 z-50 flex items-center gap-3 group cursor-default">
+         <img src="https://i.imgur.com/e00ntr3.jpg" alt="SEEST Logo" className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md shadow-xl border border-white/20 transition-transform group-hover:scale-105" />
+         <div className="flex flex-col opacity-90 group-hover:opacity-100 transition-opacity">
+            <span className="text-xl font-black tracking-tighter text-white drop-shadow-lg leading-none">SEEST</span>
+            <span className="text-[10px] font-bold tracking-widest uppercase text-white/80 drop-shadow-md">Capture, Share, Gone.</span>
+         </div>
       </div>
 
       {/* Language Toggle */}

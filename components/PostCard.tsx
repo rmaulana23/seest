@@ -178,7 +178,8 @@ export const PostCard: React.FC<PostCardProps> = ({ post, users, currentUserId, 
 
   const aspectRatioClass = post.aspectRatio === 'portrait' ? 'aspect-[9/16]' : 'aspect-video';
   
-  const togglePlay = () => {
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (videoRef.current) {
       if (isPlaying) videoRef.current.pause();
       else videoRef.current.play();
@@ -186,7 +187,8 @@ export const PostCard: React.FC<PostCardProps> = ({ post, users, currentUserId, 
     }
   };
   
-  const handleMediaNav = (direction: 'next' | 'prev') => {
+  const handleMediaNav = (e: React.MouseEvent, direction: 'next' | 'prev') => {
+      e.stopPropagation();
       const newIndex = direction === 'next'
           ? (currentMediaIndex + 1) % post.media.length
           : (currentMediaIndex - 1 + post.media.length) % post.media.length;
@@ -257,7 +259,10 @@ export const PostCard: React.FC<PostCardProps> = ({ post, users, currentUserId, 
 
       {/* Media */}
       {post.media && post.media.length > 0 ? (
-        <div className={`relative w-full overflow-hidden bg-slate-100 dark:bg-slate-700 group ${aspectRatioClass}`}>
+        <div 
+            className={`relative w-full overflow-hidden bg-slate-50 dark:bg-slate-900/50 group ${aspectRatioClass} p-3`}
+            onClick={() => onViewMedia(post.media, currentMediaIndex)}
+        >
             <AnimatePresence initial={false}>
                 <motion.div
                     key={currentMediaIndex}
@@ -265,12 +270,12 @@ export const PostCard: React.FC<PostCardProps> = ({ post, users, currentUserId, 
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -30 }}
                     transition={{ duration: 0.2, ease: 'easeInOut' }}
-                    className="absolute inset-0"
+                    className="absolute inset-3 cursor-pointer"
                 >
                     {post.media[currentMediaIndex].type === 'image' ? (
-                        <img src={post.media[currentMediaIndex].url} alt="Post media" className="w-full h-full object-cover"/>
+                        <img src={post.media[currentMediaIndex].url} alt="Post media" className="w-full h-full object-cover rounded-lg shadow-sm"/>
                     ) : (
-                        <video ref={videoRef} src={post.media[currentMediaIndex].url} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} loop muted className="w-full h-full object-cover"/>
+                        <video ref={videoRef} src={post.media[currentMediaIndex].url} onClick={togglePlay} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} loop muted className="w-full h-full object-cover rounded-lg shadow-sm"/>
                     )}
                 </motion.div>
             </AnimatePresence>
@@ -283,17 +288,20 @@ export const PostCard: React.FC<PostCardProps> = ({ post, users, currentUserId, 
             
             {hasMultipleMedia && (
                 <>
-                    <button onClick={() => handleMediaNav('prev')} className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/40 text-white rounded-full hover:bg-black/60 transition-opacity opacity-0 group-hover:opacity-100"><ChevronLeft size={20}/></button>
-                    <button onClick={() => handleMediaNav('next')} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/40 text-white rounded-full hover:bg-black/60 transition-opacity opacity-0 group-hover:opacity-100"><ChevronRight size={20}/></button>
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
-                        {post.media.map((_, i) => <div key={i} className={`h-1.5 w-1.5 rounded-full transition-colors ${i === currentMediaIndex ? 'bg-white' : 'bg-white/50'}`}/>)}
+                    <button onClick={(e) => handleMediaNav(e, 'prev')} className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-black/40 text-white rounded-full hover:bg-black/60 transition-opacity opacity-0 group-hover:opacity-100 z-10"><ChevronLeft size={20}/></button>
+                    <button onClick={(e) => handleMediaNav(e, 'next')} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-black/40 text-white rounded-full hover:bg-black/60 transition-opacity opacity-0 group-hover:opacity-100 z-10"><ChevronRight size={20}/></button>
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                        {post.media.map((_, i) => <div key={i} className={`h-1.5 w-1.5 rounded-full transition-colors shadow-sm ${i === currentMediaIndex ? 'bg-white' : 'bg-white/50'}`}/>)}
                     </div>
                 </>
             )}
 
              <button
-                onClick={() => onViewMedia(post.media, currentMediaIndex)}
-                className="absolute bottom-2 right-2 p-2 bg-black/40 text-white rounded-full hover:bg-black/60 transition-opacity opacity-0 group-hover:opacity-100"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onViewMedia(post.media, currentMediaIndex);
+                }}
+                className="absolute bottom-4 right-4 p-2 bg-black/40 text-white rounded-full hover:bg-black/60 transition-opacity opacity-0 group-hover:opacity-100 z-10"
                 aria-label={t('post.media.viewFull')}
              >
                 <Maximize size={18} />

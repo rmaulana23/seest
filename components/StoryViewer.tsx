@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Post, User, Reactions } from '../types';
 import { useTranslation } from '../contexts/LanguageContext';
-import { X, ChevronLeft, ChevronRight, Send, Star } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Send, Star, Maximize } from 'lucide-react';
 import { formatTimeAgo } from '../utils/time';
 import { REACTION_EMOJIS, CURRENT_USER_ID } from '../constants';
 
@@ -17,6 +18,7 @@ interface StoryViewerProps {
   onViewProfile: (userId: string) => void;
   isFavorited: (postId: number) => boolean;
   onToggleFavorite: (postId: number) => void;
+  onViewMedia: (media: Post['media'], startIndex: number) => void;
 }
 
 const MediaCarousel: React.FC<{
@@ -66,9 +68,9 @@ const MediaCarousel: React.FC<{
     const currentMedia = media[currentIndex];
     
     return (
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 flex items-center justify-center bg-black">
              {media.length > 1 && (
-                <div className="absolute top-2 left-2 right-2 z-20 flex gap-1">
+                <div className="absolute top-4 left-4 right-4 z-20 flex gap-1">
                     {media.map((_, index) => (
                         <div key={index} className="h-1 flex-1 bg-white/30 rounded-full overflow-hidden">
                              {index <= currentIndex && (
@@ -83,19 +85,19 @@ const MediaCarousel: React.FC<{
                     ))}
                 </div>
             )}
-            <AnimatePresence initial={false}>
+            <AnimatePresence initial={false} mode="wait">
                 <motion.div
                     key={currentIndex}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="absolute inset-0"
+                    className="w-full h-full flex items-center justify-center overflow-hidden p-4"
                 >
                     {currentMedia.type === 'video' ? (
-                        <video key={currentMedia.url} src={currentMedia.url} className="w-full h-full object-cover" autoPlay muted playsInline onEnded={onFinish} />
+                        <video key={currentMedia.url} src={currentMedia.url} className="w-full h-full object-contain rounded-xl" autoPlay muted playsInline onEnded={onFinish} />
                     ) : (
-                        <img src={currentMedia.url} alt="Story content" className="w-full h-full object-cover" />
+                        <img src={currentMedia.url} alt="Story content" className="w-full h-full object-contain rounded-xl" />
                     )}
                 </motion.div>
             </AnimatePresence>
@@ -118,6 +120,7 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
   onViewProfile,
   isFavorited,
   onToggleFavorite,
+  onViewMedia,
 }) => {
   const { t } = useTranslation();
   const [currentUserIndex, setCurrentUserIndex] = useState(initialUserIndex);
@@ -168,13 +171,13 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
+      className="fixed inset-0 bg-black/90 backdrop-blur-lg z-50 flex items-center justify-center p-4"
       onMouseDown={() => handlePause(true)}
       onMouseUp={() => handlePause(false)}
       onTouchStart={() => handlePause(true)}
       onTouchEnd={() => handlePause(false)}
     >
-      <div className="relative w-full max-w-md aspect-[9/16] bg-slate-900 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+      <div className="relative w-full max-w-md h-auto aspect-[9/16] max-h-[80vh] bg-slate-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col ring-1 ring-white/10">
         {/* Story Content */}
         <AnimatePresence initial={false}>
           <motion.div
@@ -190,9 +193,9 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
             ) : (
                 <div className={`absolute inset-0 w-full h-full ${currentStory.backgroundColor}`} />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
 
-            <div className="relative z-10 flex items-center justify-center h-full text-white p-8">
+            <div className="relative z-10 flex items-center justify-center h-full text-white p-8 pointer-events-none">
                {currentStory.text && (
                   <p className="text-center font-bold drop-shadow-lg text-3xl">{currentStory.text}</p>
                )}
@@ -203,19 +206,31 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
         {/* UI Overlay */}
         <div className="absolute inset-0 z-20 flex flex-col text-white pointer-events-none">
           {/* Header */}
-          <header className="flex items-center justify-between p-3 pt-6 pointer-events-auto">
-            <button onClick={() => onViewProfile(currentUser.id)} className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-white border-2 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-lg">
+          <header className="flex items-center justify-between p-5 pointer-events-auto">
+            <button onClick={() => onViewProfile(currentUser.id)} className="flex items-center gap-3 group">
+              <div className="h-10 w-10 rounded-full bg-white border-2 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-lg group-hover:scale-105 transition-transform">
                 {currentUser.avatar}
               </div>
-              <div>
-                <div className="font-semibold drop-shadow-md">@{currentUser.name}</div>
+              <div className="text-left">
+                <div className="font-bold drop-shadow-md text-sm">@{currentUser.name}</div>
                 <div className="text-xs text-white/80 drop-shadow-sm">{formatTimeAgo(currentStory.createdAt, t)}</div>
               </div>
             </button>
-            <div className="flex items-center">
+            <div className="flex items-center gap-1">
+               {currentStory.media.length > 0 && (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onViewMedia(currentStory.media, 0);
+                    }}
+                    className="p-2 rounded-full bg-black/20 hover:bg-white/20 backdrop-blur-sm transition-colors"
+                    aria-label="View Full Image"
+                >
+                    <Maximize size={20} />
+                </button>
+               )}
               <button
-                onClick={() => onToggleFavorite(currentStory.id)}
+                onClick={(e) => { e.stopPropagation(); onToggleFavorite(currentStory.id); }}
                 className="p-2 rounded-full hover:bg-white/20 transition-colors"
                 aria-label={favorited ? 'Remove favorite' : 'Add favorite'}
               >
@@ -230,13 +245,13 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
           <div className="flex-grow" />
 
           {/* Footer */}
-          <footer className="p-4 pointer-events-auto">
-            <div className="flex items-center justify-center gap-3">
+          <footer className="p-6 pointer-events-auto">
+            <div className="flex items-center justify-center gap-4">
                 {REACTION_EMOJIS.map(emoji => (
                     <button 
                         key={emoji} 
-                        onClick={() => onReact(currentStory.id, emoji)}
-                        className="px-4 py-2 text-2xl rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-all transform hover:scale-110"
+                        onClick={(e) => { e.stopPropagation(); onReact(currentStory.id, emoji); }}
+                        className="px-4 py-3 text-2xl rounded-full bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20 hover:scale-110 transition-all shadow-lg"
                     >
                         <span>{emoji}</span>
                     </button>

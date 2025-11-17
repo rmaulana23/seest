@@ -1,5 +1,3 @@
-
-
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Page, Activity, Post, User, PrivateMessage, Event, EventMessage, Notification } from './types';
@@ -557,6 +555,7 @@ export default function App() {
         hasUnreadNotifications={hasUnread}
         hasUnreadMessages={hasUnreadMessages}
         onNotificationClick={handleNotificationClick}
+        onCreatePost={() => handleNavigateToCreate({ asAsk: false, from: page })}
       />
       <div className="w-full max-w-7xl mx-auto flex pt-28">
         <LeftSidebar 
@@ -839,6 +838,15 @@ export default function App() {
         </div>
       </div>
       
+      {/* Mobile Floating Create Button - Above Settings Menu */}
+      <button
+        onClick={() => handleNavigateToCreate({ asAsk: false, from: page })}
+        className="md:hidden fixed bottom-20 right-4 h-14 w-14 bg-brand-600 text-white rounded-full shadow-lg flex items-center justify-center z-50 hover:bg-brand-700 transition-colors"
+        aria-label="Create Post"
+      >
+        <Plus size={28} />
+      </button>
+
       <BottomNavbar 
         activePage={page}
         setPage={navigateTo}
@@ -921,6 +929,7 @@ export default function App() {
                 }}
                 isFavorited={(postId) => favoriteIds.includes(postId)}
                 onToggleFavorite={handleToggleFavorite}
+                onViewMedia={handleViewMedia}
             />
         )}
       </AnimatePresence>

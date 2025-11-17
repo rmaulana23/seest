@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { MessageSquare, Search } from 'lucide-react';
+import { MessageSquare, Search, Plus } from 'lucide-react';
 import { useTranslation } from '../contexts/LanguageContext';
 import { User, Activity, Notification } from '../types';
 import { ActivityFilter } from './ActivityFilter';
@@ -18,9 +17,10 @@ interface HeaderProps {
     hasUnreadNotifications: boolean;
     hasUnreadMessages: boolean;
     onNotificationClick?: (notification: Notification) => void;
+    onCreatePost: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ currentUser, users, onOpenMessages, onNavigateToProfile, activityFilter, onFilterActivity, notifications, onMarkAllRead, hasUnreadNotifications, hasUnreadMessages, onNotificationClick }) => {
+export const Header: React.FC<HeaderProps> = ({ currentUser, users, onOpenMessages, onNavigateToProfile, activityFilter, onFilterActivity, notifications, onMarkAllRead, hasUnreadNotifications, hasUnreadMessages, onNotificationClick, onCreatePost }) => {
   const { t } = useTranslation();
   return (
     <div className="fixed top-0 left-0 right-0 p-4 z-40 bg-gray-100 dark:bg-slate-900">

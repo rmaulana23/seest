@@ -69,7 +69,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ isHeader, no
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-100 dark:border-slate-700 z-50 overflow-hidden"
+                        className="fixed left-4 right-4 top-20 w-auto md:absolute md:top-full md:right-0 md:w-80 md:mt-2 md:left-auto bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-100 dark:border-slate-700 z-50 overflow-hidden"
                     >
                         <div className="p-4 border-b border-gray-100 dark:border-slate-700">
                             <h3 className="font-bold text-gray-800 dark:text-gray-100">{t('notifications.title')}</h3>
