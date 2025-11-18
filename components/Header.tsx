@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MessageSquare, Search, Plus } from 'lucide-react';
 import { useTranslation } from '../contexts/LanguageContext';
@@ -28,7 +29,7 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, users, onOpenMessag
         {/* Logo */}
         <div className="flex items-center gap-3 flex-shrink-0">
             <img src="https://i.imgur.com/e00ntr3.jpg" alt="SEEST Logo" className="w-8 h-8 rounded-lg bg-white/10" />
-            <h1 className="text-xl font-bold tracking-wider">SEEST</h1>
+            <h1 className="text-lg md:text-xl font-bold tracking-wider">SEEST SOCIAL</h1>
         </div>
 
         {/* Desktop Search Bar */}

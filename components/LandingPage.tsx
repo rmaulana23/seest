@@ -131,7 +131,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
       <div className="absolute top-6 left-6 z-50 flex items-center gap-3 group cursor-default">
          <img src="https://i.imgur.com/e00ntr3.jpg" alt="SEEST Logo" className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md shadow-xl border border-white/20 transition-transform group-hover:scale-105" />
          <div className="flex flex-col opacity-90 group-hover:opacity-100 transition-opacity">
-            <span className="text-xl font-black tracking-tighter text-white drop-shadow-lg leading-none">SEEST</span>
+            <span className="text-lg font-black tracking-tighter text-white drop-shadow-lg leading-none">SEEST SOCIAL</span>
             <span className="text-[10px] font-bold tracking-widest uppercase text-white/80 drop-shadow-md">Capture, Share, Gone.</span>
          </div>
       </div>
@@ -193,7 +193,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
               exit={{ opacity: 0, y: -20 }}
               className="flex flex-col items-center text-center"
             >
-              <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-2 drop-shadow-lg">SEEST</h1>
+              <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-2 drop-shadow-lg">SEEST SOCIAL</h1>
               <p className="text-lg font-light mb-8 tracking-widest uppercase opacity-90">{t('landing.hero.subtitle')}</p>
               
               <div className="w-full space-y-3">
@@ -252,4 +252,145 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder={t('landing.placeholder.password')}
-                      className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white
+                      className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  <div className="flex justify-end">
+                      <button type="button" onClick={() => setView('forgot')} className="text-[10px] text-white/70 hover:text-white hover:underline mt-1">
+                          {t('landing.button.forgot')}
+                      </button>
+                  </div>
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="w-full py-3 bg-white text-brand-600 text-sm font-bold rounded-xl hover:bg-gray-100 transition-transform active:scale-95 mt-2 shadow-lg disabled:opacity-70 disabled:scale-100"
+                >
+                  {isLoading ? t('landing.loading') : t('landing.button.login')}
+                </button>
+                {error && <p className="text-red-300 text-xs text-center bg-red-900/30 p-2 rounded-lg border border-red-500/30">{error}</p>}
+              </form>
+            </motion.div>
+          )}
+
+          {view === 'register' && (
+            <motion.div
+              key="register"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              className="w-full"
+            >
+              <button onClick={() => { setView('landing'); setError(''); }} className="mb-4 flex items-center gap-2 text-xs font-semibold hover:opacity-80">
+                <ArrowLeft size={16} /> {t('landing.button.back')}
+              </button>
+              
+              <h2 className="text-2xl font-bold mb-1">{t('landing.register.title')}</h2>
+              <p className="text-white/70 mb-6 text-xs">{t('landing.register.subtitle')}</p>
+
+              <form onSubmit={handleRegister} className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">{t('landing.label.name')}</label>
+                  <input 
+                    type="text" 
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder={t('landing.placeholder.name')}
+                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
+                  />
+                </div>
+                
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">{t('landing.label.email')}</label>
+                  <input 
+                    type="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={t('landing.placeholder.email')}
+                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">{t('landing.label.password')}</label>
+                  <div className="relative">
+                    <input 
+                      type={showPassword ? "text" : "password"} 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder={t('landing.placeholder.password')}
+                      className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="w-full py-3 bg-white text-brand-600 text-sm font-bold rounded-xl hover:bg-gray-100 transition-transform active:scale-95 mt-2 shadow-lg disabled:opacity-70 disabled:scale-100"
+                >
+                  {isLoading ? t('landing.processing') : t('landing.button.registerAccount')}
+                </button>
+                {error && <p className="text-red-300 text-xs text-center bg-red-900/30 p-2 rounded-lg border border-red-500/30">{error}</p>}
+              </form>
+            </motion.div>
+          )}
+          
+           {view === 'forgot' && (
+            <motion.div
+              key="forgot"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              className="w-full"
+            >
+              <button onClick={() => { setView('login'); setError(''); }} className="mb-4 flex items-center gap-2 text-xs font-semibold hover:opacity-80">
+                <ArrowLeft size={16} /> {t('landing.button.back')}
+              </button>
+              
+              <h2 className="text-2xl font-bold mb-1">{t('landing.forgot.title')}</h2>
+              <p className="text-white/70 mb-6 text-xs">{t('landing.forgot.subtitle')}</p>
+
+              <form onSubmit={handleForgot} className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider ml-1 opacity-80">{t('landing.label.email')}</label>
+                  <input 
+                    type="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={t('landing.placeholder.email')}
+                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all"
+                  />
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="w-full py-3 bg-white text-brand-600 text-sm font-bold rounded-xl hover:bg-gray-100 transition-transform active:scale-95 mt-2 shadow-lg disabled:opacity-70 disabled:scale-100"
+                >
+                  {isLoading ? t('landing.sending') : t('landing.button.reset')}
+                </button>
+                {error && <p className="text-red-300 text-xs text-center bg-red-900/30 p-2 rounded-lg border border-red-500/30">{error}</p>}
+              </form>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};

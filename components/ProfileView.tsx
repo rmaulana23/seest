@@ -15,6 +15,7 @@ interface ProfileViewProps {
   currentUser: User;
   onReact: (postId: number, emoji: string) => void;
   onReply: (postId: number, text: string) => void;
+  onComment: (postId: number, text: string) => void;
   onFollow: (userId: string) => void;
   onUnfollow: (userId: string) => void;
   onViewProfile: (userId: string) => void;
@@ -50,6 +51,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   currentUser, 
   onReact, 
   onReply, 
+  onComment,
   onFollow, 
   onUnfollow,
   onViewProfile,
@@ -257,6 +259,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     currentUserId={currentUser.id}
                     onReact={onReact}
                     onReply={onReply}
+                    onComment={onComment}
                     onEdit={onEdit}
                     onDelete={onDelete}
                     onViewProfile={onViewProfile}
@@ -279,4 +282,3 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     </motion.div>
   );
 };
-    
