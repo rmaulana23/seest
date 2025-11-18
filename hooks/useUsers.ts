@@ -37,6 +37,9 @@ export const useUsers = () => {
         const { data: savedPosts, error: savedError } = await supabase.from('saved_posts').select('*');
         if (savedError) throw savedError;
 
+        // Get current auth info for fallback
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+
         const mappedUsers: User[] = profiles.map((p: any) => {
             const userFollowers = follows.filter((f: any) => f.following_id === p.id).map((f: any) => f.follower_id);
             const userFollowing = follows.filter((f: any) => f.follower_id === p.id).map((f: any) => f.following_id);
@@ -66,6 +69,26 @@ export const useUsers = () => {
             };
         });
         
+        // Fallback: If current user is authenticated but not in profiles table (e.g. trigger failed or RLS hidden),
+        // construct a temporary user object from auth metadata so the app doesn't break.
+        if (authUser && !mappedUsers.find(u => u.id === authUser.id)) {
+             const fallbackUser: User = {
+                id: authUser.id,
+                name: authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'You',
+                username: 'user-you',
+                email: authUser.email,
+                avatar: authUser.user_metadata?.avatar || authUser.email?.charAt(0).toUpperCase() || '?',
+                bio: '',
+                lastSeen: new Date().toISOString(),
+                currentActivity: 'Relaxing',
+                savedPostsVisibility: 'public',
+                followers: [],
+                following: [],
+                favoritePostIds: [],
+             };
+             mappedUsers.push(fallbackUser);
+        }
+
         setUsers(mappedUsers);
 
     } catch (error) {
@@ -74,60 +97,6 @@ export const useUsers = () => {
         setIsLoading(false);
     }
   }, []);
-
-  // Failsafe: Ensure profile exists if auth exists
-  useEffect(() => {
-    const ensureProfile = async () => {
-        if (currentAuthId && !isLoading) {
-            // Check if we have the user in our loaded list
-            const found = users.find(u => u.id === currentAuthId);
-            
-            if (!found) {
-                console.log("Profile missing for auth user, attempting recovery...");
-                // Profile missing! Create it manually if trigger failed
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                    const cleanName = user.user_metadata?.name 
-                        ? user.user_metadata.name.toLowerCase().replace(/[^a-z0-9]/g, '') 
-                        : user.email?.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
-                    
-                    const baseUsername = cleanName || 'user';
-
-                    const newProfile = {
-                        id: user.id,
-                        email: user.email,
-                        name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
-                        username: baseUsername,
-                        avatar: user.user_metadata?.avatar || user.email?.charAt(0).toUpperCase() || 'U',
-                        bio: '',
-                        current_activity: 'Relaxing',
-                        last_seen: new Date().toISOString()
-                    };
-                    
-                    let { error } = await supabase.from('profiles').upsert(newProfile);
-
-                    // If error is unique violation (username taken), try appending random number
-                    if (error && error.code === '23505') {
-                        console.log("Username collision detected during recovery, trying random suffix...");
-                        newProfile.username = `${baseUsername}${Math.floor(Math.random() * 10000)}`;
-                        const retry = await supabase.from('profiles').upsert(newProfile);
-                        error = retry.error;
-                    }
-                    
-                    if (!error) {
-                        console.log("Profile recovered successfully.");
-                        fetchData(); // Refresh data
-                    } else {
-                        // Log the actual error message for debugging
-                        console.error("Failed to recover profile:", error.message || error);
-                    }
-                }
-            }
-        }
-    };
-    
-    ensureProfile();
-  }, [currentAuthId, users, isLoading, fetchData]);
 
   useEffect(() => {
     // Fetch data immediately when the hook mounts OR when auth ID changes (Login/Logout)
@@ -210,6 +179,11 @@ export const useUsers = () => {
             if (error.code === '23505') {
                 return { error: 'Username already taken. Please choose another.' };
             }
+            // Check for schema mismatch (PGRST204)
+            if (error.code === 'PGRST204' || error.message.includes('last_username_change')) {
+                 console.error("Schema Error: Database schema update required. Please run the SUPABASE_SCHEMA.sql script.");
+                 return { error: 'Database update required. Please contact admin to run SQL migration.' };
+            }
             throw error;
         }
         fetchData();
@@ -243,8 +217,30 @@ export const useUsers = () => {
      } catch(e) { console.error(e); }
   }, [currentAuthId, fetchData]);
 
+  const changePassword = useCallback(async (newPassword: string) => {
+      return await supabase.auth.updateUser({ password: newPassword });
+  }, []);
+
+  const deleteAccount = useCallback(async () => {
+      if(!currentAuthId) return { error: 'Not authenticated' };
+      try {
+          // Call database RPC to delete self
+          // Note: This requires a 'delete_account' function in Supabase SQL (see SUPABASE_SCHEMA.sql)
+          const { error } = await supabase.rpc('delete_account');
+          if (error) throw error;
+          await supabase.auth.signOut();
+          return {};
+      } catch (e: any) {
+          console.error("Error deleting account:", e);
+          // Fallback message if function doesn't exist
+          if (e.code === '42883' || e.message?.includes('function delete_account() does not exist')) {
+              return { error: "Database setup incomplete. Please run SUPABASE_SCHEMA.sql" };
+          }
+          return { error: e.message || 'Failed to delete account.' };
+      }
+  }, [currentAuthId]);
 
   const currentUser = useMemo(() => users.find(u => u.id === currentAuthId), [users, currentAuthId]);
 
-  return { users, currentUser, followUser, unfollowUser, updateUserProfile, toggleFavorite, updateUserVisibility, addUser, isLoading };
+  return { users, currentUser, followUser, unfollowUser, updateUserProfile, toggleFavorite, updateUserVisibility, addUser, changePassword, deleteAccount, isLoading };
 };

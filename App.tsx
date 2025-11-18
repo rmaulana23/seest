@@ -26,7 +26,9 @@ import { BottomNavbar } from './components/BottomNavbar';
 import { Header } from './components/Header';
 import { StoryReel } from './components/StoryReel';
 import { StoryViewer } from './components/StoryViewer';
-import { Sun, Moon, ChevronRight, Star, Image, HelpCircle, Plus, LogOut } from 'lucide-react';
+import { ChangePasswordModal } from './components/ChangePasswordModal';
+import { DeleteAccountModal } from './components/DeleteAccountModal';
+import { Sun, Moon, ChevronRight, Star, Image, HelpCircle, Plus, LogOut, Lock, Trash2 } from 'lucide-react';
 import { useTranslation } from './contexts/LanguageContext';
 import { CURRENT_USER_ID } from './constants';
 import { ComingSoonView } from './components/ComingSoonView';
@@ -54,7 +56,7 @@ export default function App() {
   const [authUserId, setAuthUserId] = useState<string | null>(null);
 
   // Data Hooks
-  const { users, currentUser: loadedCurrentUser, followUser, unfollowUser, updateUserProfile, toggleFavorite, updateUserVisibility, addUser, isLoading: usersLoading } = useUsers();
+  const { users, currentUser: loadedCurrentUser, followUser, unfollowUser, updateUserProfile, toggleFavorite, updateUserVisibility, addUser, changePassword, deleteAccount, isLoading: usersLoading } = useUsers();
   
   const [page, setPage] = useState<Page>("home");
 
@@ -117,6 +119,10 @@ export default function App() {
   const [viewingStoryForUserIndex, setViewingStoryForUserIndex] = useState<number | null>(null);
   const [mediaViewerState, setMediaViewerState] = useState<{ media: Post['media']; startIndex: number } | null>(null);
   const [highlightedPostId, setHighlightedPostId] = useState<number | null>(null);
+  
+  // Settings Modals State
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
   
   // Onboarding State
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -801,11 +807,19 @@ export default function App() {
                                 </div>
                                 
                                  <div>
-                                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2 mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">Akun</h3>
-                                  <div className="bg-brand-50 dark:bg-slate-700/50 rounded-lg overflow-hidden">
-                                    <button onClick={handleLogout} className="w-full flex items-center gap-3 p-4 text-left hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-red-600 dark:text-red-400">
+                                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2 mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">{t('settings.account.sectionTitle')}</h3>
+                                  <div className="bg-brand-50 dark:bg-slate-700/50 rounded-lg overflow-hidden divide-y divide-brand-200 dark:divide-slate-600/50">
+                                    <button onClick={() => setIsChangePasswordOpen(true)} className="w-full flex items-center gap-3 p-4 text-left hover:bg-brand-100 dark:hover:bg-slate-600/50 transition-colors text-gray-700 dark:text-gray-200">
+                                        <Lock size={20} />
+                                        <span className="font-semibold">{t('settings.account.changePassword')}</span>
+                                    </button>
+                                    <button onClick={handleLogout} className="w-full flex items-center gap-3 p-4 text-left hover:bg-brand-100 dark:hover:bg-slate-600/50 transition-colors text-gray-700 dark:text-gray-200">
                                       <LogOut size={20} />
-                                      <span className="font-semibold">Keluar</span>
+                                      <span className="font-semibold">{t('settings.account.logout')}</span>
+                                    </button>
+                                    <button onClick={() => setIsDeleteAccountOpen(true)} className="w-full flex items-center gap-3 p-4 text-left hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-red-600 dark:text-red-400">
+                                        <Trash2 size={20} />
+                                        <span className="font-semibold">{t('settings.account.delete')}</span>
                                     </button>
                                   </div>
                                 </div>
@@ -884,6 +898,24 @@ export default function App() {
               onClose={() => setIsEditingProfile(false)}
             />
           </motion.div>
+        )}
+      </AnimatePresence>
+      
+      <AnimatePresence>
+        {isChangePasswordOpen && (
+            <ChangePasswordModal 
+                onChangePassword={changePassword} 
+                onClose={() => setIsChangePasswordOpen(false)} 
+            />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isDeleteAccountOpen && (
+            <DeleteAccountModal 
+                onDeleteAccount={deleteAccount} 
+                onClose={() => setIsDeleteAccountOpen(false)} 
+            />
         )}
       </AnimatePresence>
 

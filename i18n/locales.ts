@@ -231,7 +231,27 @@ export const locales = {
     "settings.legal.sectionTitle": "Legal",
     "settings.legal.privacy": "Kebijakan Privasi",
     "settings.legal.terms": "Syarat & Ketentuan",
+    "settings.account.sectionTitle": "Akun",
+    "settings.account.logout": "Keluar",
+    "settings.account.changePassword": "Ganti Password",
+    "settings.account.delete": "Hapus Akun Permanen",
     "settings.more": "Pengaturan lainnya segera hadir.",
+    
+    // Change Password
+    "changePassword.title": "Ganti Password",
+    "changePassword.new": "Password Baru",
+    "changePassword.confirm": "Konfirmasi Password",
+    "changePassword.error.match": "Password tidak cocok.",
+    "changePassword.error.length": "Password minimal 6 karakter.",
+    "changePassword.success": "Password berhasil diubah.",
+    "changePassword.button.save": "Simpan Password",
+
+    // Delete Account
+    "deleteAccount.title": "Hapus Akun",
+    "deleteAccount.warning.title": "Apakah Anda Yakin?",
+    "deleteAccount.warning.text": "Tindakan ini bersifat PERMANEN dan tidak dapat dibatalkan. Semua cerita, teman, pesan, dan data profil Anda akan dihapus selamanya.",
+    "deleteAccount.confirm": "Ya, Hapus Akun Saya",
+    "deleteAccount.cancel": "Batal",
     
     // Privacy Policy Page
     "privacy.title": "Kebijakan Privasi",
@@ -554,7 +574,27 @@ export const locales = {
     "settings.legal.sectionTitle": "Legal",
     "settings.legal.privacy": "Privacy Policy",
     "settings.legal.terms": "Terms & Conditions",
+    "settings.account.sectionTitle": "Account",
+    "settings.account.logout": "Log Out",
+    "settings.account.changePassword": "Change Password",
+    "settings.account.delete": "Delete Account Permanently",
     "settings.more": "More settings coming soon.",
+
+    // Change Password
+    "changePassword.title": "Change Password",
+    "changePassword.new": "New Password",
+    "changePassword.confirm": "Confirm Password",
+    "changePassword.error.match": "Passwords do not match.",
+    "changePassword.error.length": "Password must be at least 6 characters.",
+    "changePassword.success": "Password updated successfully.",
+    "changePassword.button.save": "Save Password",
+
+    // Delete Account
+    "deleteAccount.title": "Delete Account",
+    "deleteAccount.warning.title": "Are You Sure?",
+    "deleteAccount.warning.text": "This action is PERMANENT and cannot be undone. All your stories, friends, messages, and profile data will be deleted forever.",
+    "deleteAccount.confirm": "Yes, Delete My Account",
+    "deleteAccount.cancel": "Cancel",
 
     // Privacy Policy Page
     "privacy.title": "Privacy Policy",

@@ -65,8 +65,16 @@ export const usePosts = (bookmarkedIds: number[]) => {
                     createdAt: p.created_at,
                     reactions: reactionsMap, 
                     postType: p.post_type,
-                    replies: p.replies || [], 
-                    comments: p.comments || [], 
+                    replies: (p.replies || []).map((r: any) => ({
+                        userId: r.user_id || r.userId,
+                        text: r.text
+                    })), 
+                    comments: (p.comments || []).map((c: any) => ({
+                        id: c.id,
+                        userId: c.user_id || c.userId,
+                        text: c.text,
+                        createdAt: c.created_at
+                    })), 
                     aspectRatio: p.aspect_ratio,
                 };
             });
