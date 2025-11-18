@@ -53,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, users, onOpenMessag
                <button onClick={onOpenMessages} className="relative p-2.5 text-white hover:bg-white/10 rounded-full transition-colors">
                 <MessageSquare size={20} />
                  {hasUnreadMessages && (
-                    <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-brand-600"></span>
+                    <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-yellow-400 border-2 border-brand-600"></span>
                 )}
               </button>
             </div>
@@ -64,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, users, onOpenMessag
               <button onClick={onOpenMessages} className="relative p-2.5 hover:bg-white/10 rounded-full transition-colors">
                 <MessageSquare size={22} />
                  {hasUnreadMessages && (
-                    <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-brand-600"></span>
+                    <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-yellow-400 border-2 border-brand-600"></span>
                 )}
               </button>
             </div>
