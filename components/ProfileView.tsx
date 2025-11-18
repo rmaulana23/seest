@@ -1,5 +1,4 @@
 
-
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Post, User, Event } from '../types';
@@ -172,17 +171,19 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                             </button>
                         </>
                     ) : (
-                      <button onClick={onEditProfile} className="w-full sm:w-auto px-6 py-2 rounded-lg bg-brand-100 text-brand-800 dark:bg-slate-700 dark:text-brand-200 font-semibold hover:bg-brand-200 dark:hover:bg-slate-600 transition-colors">
-                        {t('profile.edit.button')}
-                      </button>
+                      <>
+                        <button onClick={onEditProfile} className="w-full sm:w-auto px-6 py-2 rounded-lg bg-brand-100 text-brand-800 dark:bg-slate-700 dark:text-brand-200 font-semibold hover:bg-brand-200 dark:hover:bg-slate-600 transition-colors">
+                          {t('profile.edit.button')}
+                        </button>
+                        <button 
+                            onClick={handleCopyLink} 
+                            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-200 font-semibold hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors flex items-center justify-center gap-2"
+                        >
+                            {isCopied ? <Check size={18} /> : <Share2 size={18} />}
+                            <span>{isCopied ? t('profile.share.copied') : t('profile.share')}</span>
+                        </button>
+                      </>
                     )}
-                    <button 
-                        onClick={handleCopyLink} 
-                        className="w-full sm:w-auto px-4 py-2 rounded-lg bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-200 font-semibold hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors flex items-center justify-center gap-2"
-                    >
-                        {isCopied ? <Check size={18} /> : <Share2 size={18} />}
-                        <span>{isCopied ? t('profile.share.copied') : t('profile.share')}</span>
-                    </button>
                   </div>
                 </div>
             </div>
@@ -278,3 +279,4 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     </motion.div>
   );
 };
+    
