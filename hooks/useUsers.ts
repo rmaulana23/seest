@@ -179,14 +179,16 @@ export const useUsers = () => {
             if (error.code === '23505') {
                 return { error: 'Username already taken. Please choose another.' };
             }
-            // Check for schema mismatch (PGRST204)
-            if (error.code === 'PGRST204' || error.message.includes('last_username_change')) {
-                 console.error("Schema Error: Database schema update required. Please run the SUPABASE_SCHEMA.sql script.");
-                 return { error: 'Database update required. Please contact admin to run SQL migration.' };
+            // Check for schema mismatch (PGRST204 or missing column)
+            if (error.code === 'PGRST204' || error.message?.includes('column "last_username_change" does not exist')) {
+                 console.error("Schema Error: Database schema update required. Please run the UPDATE_DB.sql script in Supabase SQL Editor.");
+                 return { error: 'System update required. Please contact admin to run SQL migration for username changes.' };
             }
             throw error;
         }
-        fetchData();
+        
+        // Explicitly fetch data to ensure UI updates immediately
+        await fetchData();
         return {};
     } catch(e: any) { 
         console.error(e);
@@ -225,7 +227,7 @@ export const useUsers = () => {
       if(!currentAuthId) return { error: 'Not authenticated' };
       try {
           // Call database RPC to delete self
-          // Note: This requires a 'delete_account' function in Supabase SQL (see SUPABASE_SCHEMA.sql)
+          // Note: This requires a 'delete_account' function in Supabase SQL (see UPDATE_DB.sql)
           const { error } = await supabase.rpc('delete_account');
           if (error) throw error;
           await supabase.auth.signOut();
@@ -234,7 +236,7 @@ export const useUsers = () => {
           console.error("Error deleting account:", e);
           // Fallback message if function doesn't exist
           if (e.code === '42883' || e.message?.includes('function delete_account() does not exist')) {
-              return { error: "Database setup incomplete. Please run SUPABASE_SCHEMA.sql" };
+              return { error: "Database setup incomplete. Please run UPDATE_DB.sql script." };
           }
           return { error: e.message || 'Failed to delete account.' };
       }

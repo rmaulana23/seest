@@ -1,10 +1,11 @@
 
+
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Post, User, Event } from '../types';
 import { PostCard } from './PostCard';
 import { useTranslation } from '../contexts/LanguageContext';
-import { Lock, Star } from 'lucide-react';
+import { Lock, Star, Share2, Check } from 'lucide-react';
 import { formatLastSeen } from '../utils/time';
 import { ACTIVITY_CONFIG } from '../constants';
 
@@ -66,6 +67,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'stories' | 'saved'>('stories');
+  const [isCopied, setIsCopied] = useState(false);
   
   const isCurrentUserProfile = profileUser.id === currentUser.id;
   const isFollowing = currentUser.following.includes(profileUser.id);
@@ -91,6 +93,16 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const handleVisibilityChange = () => {
       const newVisibility = (profileUser.savedPostsVisibility === 'public') ? 'private' : 'public';
       onUpdateUserVisibility(profileUser.id, newVisibility);
+  };
+  
+  const handleCopyLink = () => {
+      // Construct the URL. Assuming app uses hash router logic in App.tsx
+      const profileHandle = profileUser.username || profileUser.id;
+      const url = `${window.location.origin}/#/@${profileHandle}`;
+      navigator.clipboard.writeText(url).then(() => {
+          setIsCopied(true);
+          setTimeout(() => setIsCopied(false), 2000);
+      });
   };
   
   const postsToRender = activeTab === 'stories' ? userPosts : userSavedPosts;
@@ -164,6 +176,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                         {t('profile.edit.button')}
                       </button>
                     )}
+                    <button 
+                        onClick={handleCopyLink} 
+                        className="w-full sm:w-auto px-4 py-2 rounded-lg bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-200 font-semibold hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors flex items-center justify-center gap-2"
+                    >
+                        {isCopied ? <Check size={18} /> : <Share2 size={18} />}
+                        <span>{isCopied ? t('profile.share.copied') : t('profile.share')}</span>
+                    </button>
                   </div>
                 </div>
             </div>

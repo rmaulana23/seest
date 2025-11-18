@@ -183,6 +183,8 @@ export const locales = {
     "profile.locked.title": "Konten Privat",
     "profile.locked.description": "Anda harus saling mengikuti untuk melihat cerita mereka.",
     "profile.askMe": "Tanya Saya",
+    "profile.share": "Bagikan",
+    "profile.share.copied": "Tersalin!",
     "profile.liveEvent.title": "SEDANG SIARAN LANGSUNG",
     "profile.liveEvent.joinButton": "Gabung Sekarang",
 
@@ -526,6 +528,8 @@ export const locales = {
     "profile.locked.title": "Content is Private",
     "profile.locked.description": "You must be mutuals to see their stories.",
     "profile.askMe": "Ask Me",
+    "profile.share": "Share",
+    "profile.share.copied": "Copied!",
     "profile.liveEvent.title": "IS LIVE NOW",
     "profile.liveEvent.joinButton": "Join Now",
 
