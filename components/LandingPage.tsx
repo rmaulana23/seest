@@ -208,7 +208,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
                             <img src="https://i.imgur.com/e00ntr3.jpg" alt="Logo" className="w-12 h-12 rounded-lg" />
                         </div>
                         <h2 className="text-2xl font-bold">{t('landing.about.title')}</h2>
-                        <span className="text-xs font-mono text-gray-500 mt-1">v1.0.0 • Beta Experiment Experiment</span>
+                        <span className="text-xs font-mono text-gray-500 mt-1">v1.0.0 • Beta Experiment</span>
                     </div>
                     
                     <div className="space-y-4 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
@@ -296,7 +296,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
                                 {t('landing.button.register')}
                             </button>
                         </div>
-                        <p className="mt-6 text-[10px] text-white/50 font-mono tracking-widest">Versi 1.0.0 Beta Experiment Experiment</p>
+                        <p className="mt-6 text-[10px] text-white/50 font-mono tracking-widest">Versi 1.0.0 Beta Experiment</p>
                     </motion.div>
                 )}
 
