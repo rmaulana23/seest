@@ -1,10 +1,11 @@
 
-
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User } from '../types';
 import { Eye, EyeOff, ArrowLeft, ChevronRight, Mail, CheckCircle } from 'lucide-react';
 import { useTranslation } from '../contexts/LanguageContext';
+import { PrivacyPolicy } from './PrivacyPolicy';
+import { TermsConditions } from './TermsConditions';
 
 interface LandingPageProps {
   users: User[];
@@ -74,6 +75,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [activeLegalPage, setActiveLegalPage] = useState<'privacy' | 'terms' | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,6 +184,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
             </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* Legal Pages Modal */}
+      <AnimatePresence>
+        {activeLegalPage && (
+          <motion.div 
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1 }}
+             exit={{ opacity: 0 }}
+             className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          >
+             <div className="w-full max-w-2xl text-gray-800">
+               {activeLegalPage === 'privacy' && <PrivacyPolicy onBack={() => setActiveLegalPage(null)} mode="modal" />}
+               {activeLegalPage === 'terms' && <TermsConditions onBack={() => setActiveLegalPage(null)} mode="modal" />}
+             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="w-full max-w-sm z-10 relative backdrop-blur-sm bg-white/5 rounded-3xl border border-white/10 p-6 shadow-2xl">
         <AnimatePresence mode="wait">
@@ -209,10 +228,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
                 >
                   {t('landing.button.register')}
                 </button>
-              </div>
-              <div className="mt-8 flex items-center justify-center gap-2 opacity-50">
-                  <p className="text-[10px]">{t('landing.footer.version')}</p>
-                  <span className="px-1.5 py-0.5 bg-white/20 border border-white/10 rounded text-[8px] font-bold tracking-wider uppercase shadow-sm">Beta</span>
               </div>
             </motion.div>
           )}
@@ -390,6 +405,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
+      
+      <div className="absolute bottom-6 right-6 z-50 flex flex-col items-end gap-1 opacity-80">
+          <div className="flex items-center gap-3 text-[10px] font-medium tracking-wide uppercase text-white/80">
+              <button onClick={() => setActiveLegalPage('privacy')} className="hover:text-white hover:underline transition-all">
+                  {t('settings.legal.privacy')}
+              </button>
+              <span>•</span>
+              <button onClick={() => setActiveLegalPage('terms')} className="hover:text-white hover:underline transition-all">
+                   {t('settings.legal.terms')}
+              </button>
+          </div>
+          <div className="flex items-center gap-2">
+              <p className="text-[10px] font-light text-white/60">{t('landing.footer.version')}</p>
+              <span className="px-1.5 py-0.5 bg-white/10 border border-white/10 rounded text-[8px] font-bold tracking-wider uppercase shadow-sm text-white/80">Beta</span>
+          </div>
       </div>
     </div>
   );

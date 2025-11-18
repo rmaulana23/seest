@@ -220,7 +220,7 @@ export const locales = {
     "ask.button.create": "Ajukan Pertanyaan Baru",
     
     // Common
-    "common.backToSettings": "Kembali ke Pengaturan",
+    "common.backToSettings": "Kembali",
     "comingSoon.title": "Segera Hadir!",
     "comingSoon.description": "Fitur ini sedang dalam pengembangan dan akan segera tersedia. Nantikan pembaruannya!",
 
@@ -257,19 +257,31 @@ export const locales = {
     
     // Privacy Policy Page
     "privacy.title": "Kebijakan Privasi",
-    "privacy.lastUpdated": "Terakhir diperbarui: 24 Juli 2024",
-    "privacy.p1": "Privasi Anda penting bagi kami. Kebijakan Privasi ini menjelaskan bagaimana SEEST mengumpulkan, menggunakan, dan membagikan informasi tentang Anda.",
-    "privacy.p2": "Informasi yang Kami Kumpulkan: Kami mengumpulkan informasi yang Anda berikan langsung kepada kami, seperti saat Anda membuat akun, membuat status, atau berkomunikasi dengan pengguna lain. Ini mungkin termasuk nama pengguna, avatar, dan konten yang Anda posting.",
-    "privacy.p3": "Penggunaan Informasi: Kami menggunakan informasi Anda untuk menyediakan dan meningkatkan layanan kami, mempersonalisasi pengalaman Anda, dan berkomunikasi dengan Anda.",
-    "privacy.p4": "Berbagi Informasi: Status Anda bersifat sementara dan hanya dapat dilihat oleh pengikut mutual Anda. Kami tidak menjual data pribadi Anda kepada pihak ketiga.",
+    "privacy.lastUpdated": "Terakhir diperbarui: 20 Februari 2025",
+    "privacy.intro.title": "Pendahuluan",
+    "privacy.intro.body": "Privasi Anda adalah prioritas utama kami di SEEST. Dokumen ini menjelaskan bagaimana kami mengelola data Anda dalam lingkungan media sosial yang bersifat sementara (ephemeral).",
+    "privacy.collect.title": "Data yang Kami Kumpulkan",
+    "privacy.collect.body": "Kami mengumpulkan informasi dasar akun (email, nama pengguna), konten yang Anda posting (teks, gambar, video), serta metadata interaksi (suka, komentar).",
+    "privacy.use.title": "Penggunaan Data",
+    "privacy.use.body": "Data Anda digunakan untuk menyediakan layanan, menghubungkan Anda dengan teman, dan meningkatkan pengalaman aplikasi. Kami tidak menjual data pribadi Anda kepada pihak ketiga.",
+    "privacy.ephemeral.title": "Sifat Sementara",
+    "privacy.ephemeral.body": "Cerita (status) dan pertanyaan anonim Anda dirancang untuk hilang dari tampilan publik setelah 24 jam. Namun, harap diingat bahwa kami tidak dapat mencegah pengguna lain melakukan tangkapan layar (screenshot).",
+    "privacy.rights.title": "Hak Anda",
+    "privacy.rights.body": "Anda memiliki hak untuk mengakses, memperbaiki, atau menghapus data Anda kapan saja melalui menu Pengaturan.",
 
     // Terms & Conditions Page
     "terms.title": "Syarat & Ketentuan",
-    "terms.lastUpdated": "Terakhir diperbarui: 24 Juli 2024",
-    "terms.p1": "Selamat datang di SEEST! Syarat dan Ketentuan ini mengatur penggunaan Anda atas aplikasi kami.",
-    "terms.p2": "Dengan menggunakan layanan kami, Anda setuju dengan syarat-syarat ini. Harap baca dengan saksama.",
-    "terms.p3": "Perilaku Pengguna: Anda bertanggung jawab atas konten yang Anda posting. Jangan memposting konten yang melanggar hukum, penuh kebencian, atau melanggar hak orang lain.",
-    "terms.p4": "Penafian: Layanan disediakan \"sebagaimana adanya\" tanpa jaminan apa pun. Kami tidak bertanggung jawab atas konten pengguna atau tindakan pengguna lain.",
+    "terms.lastUpdated": "Terakhir diperbarui: 20 Februari 2025",
+    "terms.intro.title": "Penerimaan Syarat",
+    "terms.intro.body": "Dengan mengakses atau menggunakan SEEST, Anda setuju untuk terikat oleh Syarat dan Ketentuan ini.",
+    "terms.conduct.title": "Perilaku Pengguna",
+    "terms.conduct.body": "Anda setuju untuk tidak memposting konten yang melanggar hukum, berbahaya, mengancam, kasar, melecehkan, atau mengandung ujaran kebencian. Kami berhak menghapus konten atau memblokir akun yang melanggar aturan ini.",
+    "terms.content.title": "Konten Pengguna",
+    "terms.content.body": "Anda memegang hak cipta atas konten yang Anda posting, namun memberikan SEEST lisensi terbatas untuk menampilkan konten tersebut di platform selama periode 24 jam (atau lebih lama jika disimpan).",
+    "terms.liability.title": "Batasan Tanggung Jawab",
+    "terms.liability.body": "Layanan disediakan 'sebagaimana adanya'. SEEST tidak bertanggung jawab atas kerugian tidak langsung yang timbul dari penggunaan aplikasi ini.",
+    "terms.termination.title": "Penghentian",
+    "terms.termination.body": "Kami dapat menangguhkan atau menghentikan akses Anda ke layanan kapan saja jika Anda melanggar syarat ini.",
 
     // Authentication
     "auth.signUp.success.title": "Pendaftaran Berhasil",
@@ -565,7 +577,7 @@ export const locales = {
     "ask.button.create": "Ask a New Question",
     
     // Common
-    "common.backToSettings": "Back to Settings",
+    "common.backToSettings": "Back",
     "comingSoon.title": "Coming Soon!",
     "comingSoon.description": "This feature is currently under development and will be available shortly. Stay tuned!",
 
@@ -602,19 +614,31 @@ export const locales = {
 
     // Privacy Policy Page
     "privacy.title": "Privacy Policy",
-    "privacy.lastUpdated": "Last updated: July 24, 2024",
-    "privacy.p1": "Your privacy is important to us. This Privacy Policy explains how SEEST collects, uses, and shares information about you.",
-    "privacy.p2": "Information We Collect: We collect information you provide directly to us, such as when you create an account, create a status, or communicate with other users. This may include your username, avatar, and the content you post.",
-    "privacy.p3": "Use of Information: We use your information to provide and improve our services, personalize your experience, and communicate with you.",
-    "privacy.p4": "Sharing of Information: Your statuses are ephemeral and only viewable by your mutual followers. We do not sell your personal data to third parties.",
+    "privacy.lastUpdated": "Last updated: February 20, 2025",
+    "privacy.intro.title": "Introduction",
+    "privacy.intro.body": "Your privacy is our top priority at SEEST. This document explains how we manage your data in our ephemeral social media environment.",
+    "privacy.collect.title": "Data We Collect",
+    "privacy.collect.body": "We collect basic account information (email, username), content you post (text, images, videos), and interaction metadata (likes, comments).",
+    "privacy.use.title": "Use of Data",
+    "privacy.use.body": "We use your data to provide our services, connect you with friends, and improve the app experience. We do not sell your personal data to third parties.",
+    "privacy.ephemeral.title": "Ephemeral Nature",
+    "privacy.ephemeral.body": "Your stories (statuses) and anonymous questions are designed to disappear from public view after 24 hours. However, please note that we cannot prevent other users from taking screenshots.",
+    "privacy.rights.title": "Your Rights",
+    "privacy.rights.body": "You have the right to access, correct, or delete your data at any time via the Settings menu.",
 
     // Terms & Conditions Page
     "terms.title": "Terms & Conditions",
-    "terms.lastUpdated": "Last updated: July 24, 2024",
-    "terms.p1": "Welcome to SEEST! These Terms & Conditions govern your use of our application.",
-    "terms.p2": "By using our service, you agree to these terms. Please read them carefully.",
-    "terms.p3": "User Conduct: You are responsible for the content you post. Do not post content that is unlawful, hateful, or infringes on the rights of others.",
-    "terms.p4": "Disclaimer: The service is provided \"as is\" without any warranties. We are not responsible for user-generated content or the actions of other users.",
+    "terms.lastUpdated": "Last updated: February 20, 2025",
+    "terms.intro.title": "Acceptance of Terms",
+    "terms.intro.body": "By accessing or using SEEST, you agree to be bound by these Terms and Conditions.",
+    "terms.conduct.title": "User Conduct",
+    "terms.conduct.body": "You agree not to post content that is unlawful, harmful, threatening, abusive, harassing, or contains hate speech. We reserve the right to remove content or ban accounts that violate these rules.",
+    "terms.content.title": "User Content",
+    "terms.content.body": "You retain copyright over the content you post, but grant SEEST a limited license to display such content on the platform for the 24-hour period (or longer if saved).",
+    "terms.liability.title": "Limitation of Liability",
+    "terms.liability.body": "The service is provided 'as is'. SEEST is not liable for any indirect damages arising from the use of this application.",
+    "terms.termination.title": "Termination",
+    "terms.termination.body": "We may suspend or terminate your access to the service at any time if you violate these terms.",
 
     // Authentication
     "auth.signUp.success.title": "Registration Successful",

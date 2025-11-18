@@ -1,5 +1,5 @@
 {
-  "name": "SEEST",
+  "name": "SEEST SOCIAL",
   "description": "SEEST is a social media web application based on ephemeral statuses, where posts automatically disappear 24 hours after being posted. Users can share their mood, text, and an optional image.",
   "requestFramePermissions": []
 }
