@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LayoutGrid, Settings, HelpCircle, Users } from 'lucide-react';
+import { LayoutGrid, Settings, HelpCircle, Users, User } from 'lucide-react';
 import { Page } from '../types';
 import { useTranslation } from '../contexts/LanguageContext';
 
@@ -35,11 +35,12 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({ activePage, setPage,
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-brand-600 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] z-40">
-      <nav className="grid grid-cols-4 justify-around items-center h-full">
+      <nav className="grid grid-cols-5 justify-around items-center h-full">
         <NavButton icon={<LayoutGrid size={24} />} label={t('nav.feed.short')} isActive={activePage === 'home'} onClick={() => setPage('home')} />
         <NavButton icon={<Users size={24} />} label={t('nav.friends.short')} isActive={activePage === 'friends'} onClick={() => setPage('friends')} />
         <NavButton icon={<HelpCircle size={24} />} label={t('nav.ask.short')} isActive={activePage === 'ask'} onClick={() => setPage('ask')} />
         <NavButton icon={<Settings size={24} />} label={t('nav.settings.short')} isActive={activePage === 'settings'} onClick={() => setPage('settings')} />
+        <NavButton icon={<User size={24} />} label={t('nav.profile.short')} isActive={activePage === 'profile'} onClick={onNavigateToProfile} />
       </nav>
     </div>
   );

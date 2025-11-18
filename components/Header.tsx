@@ -69,9 +69,9 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, users, onOpenMessag
               </button>
             </div>
 
-            {/* Shared Profile Icon */}
+            {/* Shared Profile Icon - HIDDEN ON MOBILE */}
             {currentUser && (
-                <button onClick={onNavigateToProfile} className="flex items-center justify-center w-9 h-9 bg-white/20 border-2 border-white/50 rounded-full hover:bg-white/30 transition-colors">
+                <button onClick={onNavigateToProfile} className="hidden md:flex items-center justify-center w-9 h-9 bg-white/20 border-2 border-white/50 rounded-full hover:bg-white/30 transition-colors">
                 <span className="font-bold text-md text-white">{currentUser.avatar}</span>
                 </button>
             )}

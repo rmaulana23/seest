@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Page, Activity, Post, User, PrivateMessage, Event, EventMessage, Notification } from './types';
@@ -28,13 +29,14 @@ import { StoryReel } from './components/StoryReel';
 import { StoryViewer } from './components/StoryViewer';
 import { ChangePasswordModal } from './components/ChangePasswordModal';
 import { DeleteAccountModal } from './components/DeleteAccountModal';
-import { Sun, Moon, ChevronRight, Star, Image, HelpCircle, Plus, LogOut, Lock, Trash2 } from 'lucide-react';
+import { Sun, Moon, ChevronRight, Star, Image, HelpCircle, Plus, LogOut, Lock, Trash2, Book } from 'lucide-react';
 import { useTranslation } from './contexts/LanguageContext';
 import { CURRENT_USER_ID } from './constants';
 import { ComingSoonView } from './components/ComingSoonView';
 import { MediaViewerModal } from './components/MediaViewerModal';
 import { LandingPage } from './components/LandingPage';
 import { OnboardingTutorial } from './components/OnboardingTutorial';
+import { HelpModal } from './components/HelpModal';
 import { supabase } from './lib/supabase';
 
 
@@ -123,6 +125,7 @@ export default function App() {
   // Settings Modals State
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
   
   // Onboarding State
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -792,6 +795,16 @@ export default function App() {
                                 </div>
 
                                 <div>
+                                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2 mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">{t('settings.support.sectionTitle')}</h3>
+                                  <div className="bg-brand-50 dark:bg-slate-700/50 rounded-lg overflow-hidden">
+                                    <button onClick={() => setIsHelpOpen(true)} className="w-full flex items-center gap-3 p-4 text-left hover:bg-brand-100 dark:hover:bg-slate-600/50 transition-colors text-gray-700 dark:text-gray-200">
+                                        <Book size={20} />
+                                        <span className="font-semibold">{t('settings.support.help')}</span>
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div>
                                   <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2 mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">{t('settings.legal.sectionTitle')}</h3>
                                   <div className="bg-brand-50 dark:bg-slate-700/50 rounded-lg overflow-hidden">
                                     <button onClick={() => navigateTo('privacy')} className="w-full flex items-center justify-between p-4 text-left hover:bg-brand-100 dark:hover:bg-slate-600/50 transition-colors">
@@ -917,6 +930,10 @@ export default function App() {
                 onClose={() => setIsDeleteAccountOpen(false)} 
             />
         )}
+      </AnimatePresence>
+      
+      <AnimatePresence>
+        {isHelpOpen && <HelpModal onClose={() => setIsHelpOpen(false)} />}
       </AnimatePresence>
 
       <AnimatePresence>
