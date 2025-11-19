@@ -1,9 +1,8 @@
 
-
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User } from '../types';
-import { Eye, EyeOff, ArrowLeft, CheckCircle, X } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft, CheckCircle, X, Info } from 'lucide-react';
 import { useTranslation } from '../contexts/LanguageContext';
 import { PrivacyPolicy } from './PrivacyPolicy';
 import { TermsConditions } from './TermsConditions';
@@ -74,6 +73,59 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
   const [showAbout, setShowAbout] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash === '#/about') {
+        setShowAbout(true);
+        setShowHelp(false);
+        setActiveLegalPage(null);
+      } else if (hash === '#/help') {
+        setShowHelp(true);
+        setShowAbout(false);
+        setActiveLegalPage(null);
+      } else if (hash === '#/privacy') {
+        setActiveLegalPage('privacy');
+        setShowAbout(false);
+        setShowHelp(false);
+      } else if (hash === '#/terms') {
+        setActiveLegalPage('terms');
+        setShowAbout(false);
+        setShowHelp(false);
+      } else if (hash === '#/login') {
+        setView('login');
+        setShowAbout(false);
+        setShowHelp(false);
+        setActiveLegalPage(null);
+      } else if (hash === '#/register') {
+        setView('register');
+        setShowAbout(false);
+        setShowHelp(false);
+        setActiveLegalPage(null);
+      } else if (hash === '#/forgot') {
+        setView('forgot');
+        setShowAbout(false);
+        setShowHelp(false);
+        setActiveLegalPage(null);
+      } else {
+        setView('landing');
+        setShowAbout(false);
+        setShowHelp(false);
+        setActiveLegalPage(null);
+      }
+    };
+
+    // Initial check
+    handleHashChange();
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  const updateHash = (newHash: string) => {
+    window.location.hash = newHash;
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -117,7 +169,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
           setError(error.message);
       } else {
           alert(t('auth.forgotPassword.success'));
-          setView('login');
+          updateHash('/login');
       }
   }
 
@@ -149,7 +201,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
                     <h3 className="text-2xl font-bold mb-2">{t('auth.signUp.success.title')}</h3>
                     <p className="text-gray-600 mb-6">{t('auth.signUp.success.message')}</p>
                     <button 
-                        onClick={() => { setShowConfirmModal(false); setView('login'); }}
+                        onClick={() => { setShowConfirmModal(false); updateHash('/login'); }}
                         className="w-full py-3 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition-colors"
                     >
                         {t('auth.signUp.success.button')}
@@ -169,8 +221,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           >
              <div className="w-full max-w-2xl text-gray-800">
-               {activeLegalPage === 'privacy' && <PrivacyPolicy onBack={() => setActiveLegalPage(null)} mode="modal" />}
-               {activeLegalPage === 'terms' && <TermsConditions onBack={() => setActiveLegalPage(null)} mode="modal" />}
+               {activeLegalPage === 'privacy' && <PrivacyPolicy onBack={() => updateHash('/')} mode="modal" />}
+               {activeLegalPage === 'terms' && <TermsConditions onBack={() => updateHash('/')} mode="modal" />}
              </div>
           </motion.div>
         )}
@@ -178,7 +230,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
 
       {/* Help Modal */}
       <AnimatePresence>
-          {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
+          {showHelp && <HelpModal onClose={() => updateHash('/')} />}
       </AnimatePresence>
 
       {/* About Modal */}
@@ -197,24 +249,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
                     className="bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-200 rounded-3xl p-8 max-w-md w-full relative shadow-2xl border border-white/20"
                 >
                      <button 
-                        onClick={() => setShowAbout(false)} 
+                        onClick={() => updateHash('/')} 
                         className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
                     >
                         <X size={20} />
                     </button>
                     
                     <div className="flex flex-col items-center text-center mb-6">
-                        <div className="w-16 h-16 bg-brand-600 text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg">
-                            <img src="https://i.imgur.com/e00ntr3.jpg" alt="Logo" className="w-12 h-12 rounded-lg" />
-                        </div>
-                        <h2 className="text-2xl font-bold">{t('landing.about.title')}</h2>
-                        <span className="text-xs font-mono text-gray-500 mt-1">v1.0.0 • Beta Experiment</span>
+                        <img src="https://imgur.com/e00ntr3.jpg" alt="SEEST Logo" className="w-16 h-16 rounded-2xl mb-4 shadow-lg transform rotate-3" />
+                        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{t('landing.about.title')}</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Versi 1.0.0 Beta Experiment</p>
                     </div>
                     
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+                    <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300 text-center">
                         <p>{t('landing.about.description')}</p>
-                        <div className="p-4 bg-brand-50 dark:bg-slate-700/50 rounded-xl border border-brand-100 dark:border-slate-600">
-                            <p className="font-medium italic text-brand-800 dark:text-brand-200">"{t('landing.about.mission')}"</p>
+                        <div className="bg-brand-50 dark:bg-brand-900/20 p-4 rounded-xl border border-brand-100 dark:border-brand-800/30">
+                            <p className="font-semibold text-brand-700 dark:text-brand-400">{t('landing.about.mission')}</p>
                         </div>
                     </div>
                 </motion.div>
@@ -222,169 +272,200 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
         )}
       </AnimatePresence>
 
-      {/* Header / Logo Top Left */}
-      <div className="absolute top-6 left-6 z-50 flex items-center gap-3">
-         <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl border border-white/30 flex items-center justify-center shadow-lg">
-            <img src="https://i.imgur.com/e00ntr3.jpg" alt="Logo" className="w-8 h-8 rounded-lg" />
+      {/* Top Right Header */}
+      <div className="absolute top-0 right-0 p-6 z-20 flex items-center gap-4">
+         <button onClick={() => updateHash(showHelp ? '/' : '/help')} className="hidden md:block text-sm font-bold hover:text-white/80 transition-colors tracking-wide">
+            {t('landing.help.button')}
+         </button>
+         <button onClick={() => updateHash(showAbout ? '/' : '/about')} className="hidden md:flex items-center gap-2 text-sm font-bold hover:text-white/80 transition-colors tracking-wide">
+            <Info size={16} />
+            {t('landing.about.button')}
+         </button>
+         <div className="hidden md:block h-4 w-px bg-white/30 mx-1"></div>
+         <div className="flex items-center bg-black/20 backdrop-blur-sm rounded-full p-1">
+             <button onClick={() => setLanguage('id')} className={`px-3 py-1 text-xs font-bold rounded-full transition-all ${language === 'id' ? 'bg-white text-brand-600 shadow-md' : 'text-white hover:bg-white/10'}`}>ID</button>
+             <button onClick={() => setLanguage('en')} className={`px-3 py-1 text-xs font-bold rounded-full transition-all ${language === 'en' ? 'bg-white text-brand-600 shadow-md' : 'text-white hover:bg-white/10'}`}>EN</button>
          </div>
-         <div className="flex flex-col leading-none drop-shadow-md">
-             <span className="font-black text-xl tracking-tighter">SEEST SOCIAL</span>
-             <span className="text-[10px] font-medium tracking-widest opacity-80">CAPTURE. SHARE. GONE.</span>
+      </div>
+      
+      {/* Top Left Logo */}
+      <div className="absolute top-0 left-0 p-6 z-20 flex items-center gap-3">
+         <img src="https://imgur.com/e00ntr3.jpg" alt="SEEST Logo" className="w-10 h-10 rounded-xl shadow-lg transform -rotate-6" />
+         <div>
+             <h1 className="text-lg font-extrabold tracking-widest leading-none">SEEST SOCIAL</h1>
+             <p className="text-[10px] font-medium opacity-80 tracking-[0.2em]">{t('landing.hero.subtitle').toUpperCase()}</p>
          </div>
       </div>
 
-      {/* Top Right: About & Language */}
-      <div className="absolute top-6 right-6 z-50 flex items-center gap-4">
-             <button 
-                onClick={() => setShowHelp(true)} 
-                className="text-xs font-bold text-white/80 hover:text-white transition-colors tracking-wider uppercase drop-shadow-md"
+      <div className="relative z-10 w-full max-w-md p-4 flex flex-col items-center">
+        <AnimatePresence mode="wait">
+          {view === 'landing' && (
+            <motion.div 
+               key="landing"
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               exit={{ opacity: 0, y: -20 }}
+               className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden"
             >
-                {t('landing.help.button')}
-            </button>
-            <button 
-                onClick={() => setShowAbout(true)} 
-                className="text-xs font-bold text-white/80 hover:text-white transition-colors tracking-wider uppercase drop-shadow-md"
-            >
-                {t('landing.about.button')}
-            </button>
-            <div className="flex gap-2">
-                <button 
-                onClick={() => setLanguage('id')} 
-                className={`w-8 h-8 rounded-full text-xs font-bold transition-all border border-white/30 flex items-center justify-center ${language === 'id' ? 'bg-white text-brand-600 shadow-lg' : 'bg-black/10 text-white hover:bg-white/10'}`}
-                >
-                ID
-                </button>
-                <button 
-                onClick={() => setLanguage('en')} 
-                className={`w-8 h-8 rounded-full text-xs font-bold transition-all border border-white/30 flex items-center justify-center ${language === 'en' ? 'bg-white text-brand-600 shadow-lg' : 'bg-black/10 text-white hover:bg-white/10'}`}
-                >
-                EN
-                </button>
-            </div>
-      </div>
+               <div className="text-center mb-8">
+                   <h2 className="text-5xl font-black mb-2 tracking-tighter drop-shadow-sm">
+                     SEEST<br/>SOCIAL
+                   </h2>
+                   <p className="text-sm font-medium tracking-[0.3em] opacity-90">EPHEMERAL STATUS</p>
+               </div>
 
-      {/* Main Card Centered */}
-      <div className="relative z-20 w-full max-w-md p-6">
-          <motion.div 
-            layout
-            className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden relative"
-          >
-             <AnimatePresence mode="wait">
-                {view === 'landing' && (
-                    <motion.div
-                        key="landing"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="flex flex-col items-center text-center py-6"
+               <div className="space-y-4">
+                  <button 
+                    onClick={() => updateHash('/login')}
+                    className="w-full py-3.5 bg-white text-brand-600 font-bold text-sm tracking-wider rounded-xl shadow-lg hover:bg-gray-50 hover:scale-[1.02] transition-all active:scale-95"
+                  >
+                    {t('landing.button.login')}
+                  </button>
+                  <button 
+                    onClick={() => updateHash('/register')}
+                    className="w-full py-3.5 bg-transparent border-2 border-white text-white font-bold text-sm tracking-wider rounded-xl hover:bg-white/10 hover:scale-[1.02] transition-all active:scale-95"
+                  >
+                    {t('landing.button.register')}
+                  </button>
+               </div>
+               
+               <p className="text-center text-xs font-mono text-white/50 mt-8">
+                   Versi 1.0.0 Beta Experiment
+               </p>
+            </motion.div>
+          )}
+
+          {(view === 'login' || view === 'register' || view === 'forgot') && (
+             <motion.div 
+               key="form"
+               initial={{ opacity: 0, x: 50 }}
+               animate={{ opacity: 1, x: 0 }}
+               exit={{ opacity: 0, x: -50 }}
+               className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 shadow-2xl relative"
+            >
+               <button onClick={() => updateHash('/')} className="absolute top-6 left-6 p-2 rounded-full hover:bg-white/10 transition-colors text-white">
+                   <ArrowLeft size={20} />
+               </button>
+               
+               <div className="text-center mt-4 mb-8">
+                   <h2 className="text-2xl font-bold">
+                     {view === 'login' ? t('landing.login.title') : view === 'register' ? t('landing.register.title') : t('landing.forgot.title')}
+                   </h2>
+                   <p className="text-sm opacity-80">
+                     {view === 'login' ? t('landing.login.subtitle') : view === 'register' ? t('landing.register.subtitle') : t('landing.forgot.subtitle')}
+                   </p>
+               </div>
+
+               {error && (
+                   <div className="mb-4 p-3 bg-red-500/80 border border-red-400/50 text-white text-sm rounded-xl text-center shadow-sm">
+                       {error}
+                   </div>
+               )}
+
+               <form onSubmit={view === 'login' ? handleLogin : view === 'register' ? handleRegister : handleForgot} className="space-y-4">
+                   {view === 'register' && (
+                       <div>
+                           <label className="block text-xs font-bold mb-1.5 ml-1 opacity-90">{t('landing.label.name')}</label>
+                           <input 
+                                type="text" 
+                                value={name}
+                                onChange={e => setName(e.target.value)}
+                                placeholder={t('landing.placeholder.name')}
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3.5 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                                required 
+                           />
+                       </div>
+                   )}
+                   
+                   <div>
+                       <label className="block text-xs font-bold mb-1.5 ml-1 opacity-90">{t('landing.label.email')}</label>
+                       <input 
+                            type="email" 
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            placeholder={t('landing.placeholder.email')}
+                            className="w-full bg-black/20 border border-white/10 rounded-xl p-3.5 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                            required 
+                       />
+                   </div>
+
+                   {view !== 'forgot' && (
+                       <div>
+                           <label className="block text-xs font-bold mb-1.5 ml-1 opacity-90">{t('landing.label.password')}</label>
+                           <div className="relative">
+                               <input 
+                                    type={showPassword ? "text" : "password"} 
+                                    value={password}
+                                    onChange={e => setPassword(e.target.value)}
+                                    placeholder={t('landing.placeholder.password')}
+                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3.5 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                                    required 
+                               />
+                               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors">
+                                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                               </button>
+                           </div>
+                       </div>
+                   )}
+                   
+                   {view === 'login' && (
+                       <div className="flex justify-end">
+                           <button type="button" onClick={() => updateHash('/forgot')} className="text-xs font-semibold hover:underline opacity-90 hover:opacity-100">
+                               {t('landing.button.forgot')}
+                           </button>
+                       </div>
+                   )}
+
+                   <button 
+                        type="submit" 
+                        disabled={isLoading}
+                        className="w-full py-3.5 bg-white text-brand-600 font-bold text-sm tracking-wider rounded-xl shadow-lg hover:bg-gray-50 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed mt-4"
                     >
-                        <h1 className="text-6xl font-black tracking-tighter mb-0 leading-none drop-shadow-lg">SEEST</h1>
-                        <h1 className="text-6xl font-black tracking-tighter mb-4 leading-none drop-shadow-lg">SOCIAL</h1>
-                        <p className="text-sm font-bold tracking-[0.3em] uppercase opacity-90 mb-12 drop-shadow-md">Ephemeral Status</p>
-                        
-                        <div className="w-full space-y-4">
-                            <button 
-                                onClick={() => setView('login')} 
-                                className="w-full py-4 bg-white text-brand-700 font-black text-lg tracking-wide rounded-full hover:scale-105 transition-all shadow-xl"
-                            >
-                                {t('landing.button.login')}
-                            </button>
-                            <button 
-                                onClick={() => setView('register')} 
-                                className="w-full py-4 bg-transparent border-2 border-white text-white font-black text-lg tracking-wide rounded-full hover:bg-white/10 hover:scale-105 transition-all shadow-md"
-                            >
-                                {t('landing.button.register')}
-                            </button>
-                        </div>
-                        <p className="mt-6 text-[10px] text-white/50 font-mono tracking-widest">Versi 1.0.0 Beta Experiment</p>
-                    </motion.div>
-                )}
+                        {isLoading ? t('landing.processing') : (view === 'login' ? t('landing.button.login') : view === 'register' ? t('landing.button.registerAccount') : t('landing.button.reset'))}
+                   </button>
+               </form>
+               
+               {view !== 'forgot' && (
+                   <div className="mt-6 text-center">
+                       <p className="text-xs opacity-80">
+                           {view === 'login' ? t('landing.footer.noAccount') : t('landing.footer.hasAccount')}
+                           <button 
+                               onClick={() => updateHash(view === 'login' ? '/register' : '/login')}
+                               className="ml-1 font-bold underline hover:text-white transition-colors"
+                           >
+                               {view === 'login' ? t('landing.button.register') : t('landing.button.login')}
+                           </button>
+                       </p>
+                   </div>
+               )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-                {/* Other views reuse previous logic but styled for center card */}
-                {view === 'login' && (
-                    <motion.div key="login" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                         <button onClick={() => { setView('landing'); setError(''); }} className="mb-6 flex items-center gap-2 text-xs font-bold hover:opacity-80 text-white/80 uppercase tracking-wider">
-                            <ArrowLeft size={14} /> {t('landing.button.back')}
-                        </button>
-                        <h2 className="text-3xl font-black mb-2 text-center">{t('landing.login.title')}</h2>
-                        <p className="text-white/80 mb-8 text-center text-sm">{t('landing.login.subtitle')}</p>
-                        
-                        <form onSubmit={handleLogin} className="space-y-4">
-                             {/* Inputs */}
-                             <div className="space-y-1">
-                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('landing.placeholder.email')} className="w-full bg-black/20 border border-white/20 rounded-xl px-5 py-4 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all backdrop-blur-sm" />
-                             </div>
-                             <div className="space-y-1 relative">
-                                <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('landing.placeholder.password')} className="w-full bg-black/20 border border-white/20 rounded-xl px-5 py-4 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all backdrop-blur-sm" />
-                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white"><Eye size={20} /></button>
-                             </div>
-                             <div className="flex justify-end"><button type="button" onClick={() => setView('forgot')} className="text-xs font-medium text-white/80 hover:text-white hover:underline">{t('landing.button.forgot')}</button></div>
-                             
-                             <button type="submit" disabled={isLoading} className="w-full py-4 bg-white text-brand-700 font-black text-lg rounded-full hover:scale-105 transition-transform shadow-lg mt-4 disabled:opacity-70 disabled:scale-100">
-                                {isLoading ? t('landing.loading') : t('landing.button.login')}
-                             </button>
-                             {error && <p className="text-red-100 text-xs text-center bg-red-900/60 p-3 rounded-xl border border-red-500/30 mt-2 backdrop-blur-sm">{error}</p>}
-                        </form>
-                    </motion.div>
-                )}
-
-                {view === 'register' && (
-                    <motion.div key="register" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                        <button onClick={() => { setView('landing'); setError(''); }} className="mb-6 flex items-center gap-2 text-xs font-bold hover:opacity-80 text-white/80 uppercase tracking-wider">
-                            <ArrowLeft size={14} /> {t('landing.button.back')}
-                        </button>
-                        <h2 className="text-3xl font-black mb-2 text-center">{t('landing.register.title')}</h2>
-                        <p className="text-white/80 mb-8 text-center text-sm">{t('landing.register.subtitle')}</p>
-                        
-                         <form onSubmit={handleRegister} className="space-y-4">
-                             <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder={t('landing.placeholder.name')} className="w-full bg-black/20 border border-white/20 rounded-xl px-5 py-4 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all backdrop-blur-sm" />
-                             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('landing.placeholder.email')} className="w-full bg-black/20 border border-white/20 rounded-xl px-5 py-4 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all backdrop-blur-sm" />
-                             <div className="relative">
-                                <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('landing.placeholder.password')} className="w-full bg-black/20 border border-white/20 rounded-xl px-5 py-4 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all backdrop-blur-sm" />
-                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white"><Eye size={20} /></button>
-                             </div>
-                             <button type="submit" disabled={isLoading} className="w-full py-4 bg-white text-brand-700 font-black text-lg rounded-full hover:scale-105 transition-transform shadow-lg mt-4 disabled:opacity-70 disabled:scale-100">
-                                {isLoading ? t('landing.processing') : t('landing.button.registerAccount')}
-                             </button>
-                             {error && <p className="text-red-100 text-xs text-center bg-red-900/60 p-3 rounded-xl border border-red-500/30 mt-2 backdrop-blur-sm">{error}</p>}
-                        </form>
-                    </motion.div>
-                )}
-                
-                 {view === 'forgot' && (
-                    <motion.div key="forgot" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                        <button onClick={() => { setView('login'); setError(''); }} className="mb-6 flex items-center gap-2 text-xs font-bold hover:opacity-80 text-white/80 uppercase tracking-wider">
-                            <ArrowLeft size={14} /> {t('landing.button.back')}
-                        </button>
-                        <h2 className="text-3xl font-black mb-2 text-center">{t('landing.forgot.title')}</h2>
-                         <form onSubmit={handleForgot} className="space-y-6 mt-6">
-                             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('landing.placeholder.email')} className="w-full bg-black/20 border border-white/20 rounded-xl px-5 py-4 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/30 transition-all backdrop-blur-sm" />
-                             <button type="submit" disabled={isLoading} className="w-full py-4 bg-white text-brand-700 font-black text-lg rounded-full hover:scale-105 transition-transform shadow-lg disabled:opacity-70 disabled:scale-100">
-                                {isLoading ? t('landing.sending') : t('landing.button.reset')}
-                             </button>
-                             {error && <p className="text-red-100 text-xs text-center bg-red-900/60 p-3 rounded-xl border border-red-500/30 mt-2 backdrop-blur-sm">{error}</p>}
-                        </form>
-                    </motion.div>
-                 )}
-             </AnimatePresence>
-          </motion.div>
+        {/* Mobile Menu Links (Help/About) */}
+        <div className="mt-8 flex md:hidden items-center gap-6 z-20">
+             <button onClick={() => updateHash(showHelp ? '/' : '/help')} className="text-sm font-bold text-white/90 hover:text-white transition-colors tracking-wide shadow-sm">
+                {t('landing.help.button')}
+             </button>
+             <div className="h-4 w-px bg-white/30"></div>
+             <button onClick={() => updateHash(showAbout ? '/' : '/about')} className="text-sm font-bold text-white/90 hover:text-white transition-colors tracking-wide flex items-center gap-2 shadow-sm">
+                <Info size={16} />
+                {t('landing.about.button')}
+             </button>
+        </div>
       </div>
-
-      {/* Footer Links */}
-      <div className="absolute bottom-6 right-6 z-50 flex flex-col items-end gap-1 opacity-80">
-          <div className="flex items-center gap-3 text-[10px] font-bold tracking-wide uppercase text-white/90">
-              <button onClick={() => setActiveLegalPage('privacy')} className="hover:text-white hover:underline transition-all drop-shadow-md">
-                  {t('settings.legal.privacy')}
-              </button>
-              <span>•</span>
-              <button onClick={() => setActiveLegalPage('terms')} className="hover:text-white hover:underline transition-all drop-shadow-md">
-                   {t('settings.legal.terms')}
-              </button>
-          </div>
-          <div className="flex items-center gap-2">
-              <p className="text-[10px] font-light text-white/70 drop-shadow-md">© SEEST SOCIAL 2025</p>
-              <span className="px-1.5 py-0.5 bg-white/20 border border-white/20 rounded text-[8px] font-bold tracking-wider uppercase shadow-sm text-white backdrop-blur-sm">Beta Experiment</span>
-          </div>
+      
+      {/* Footer */}
+      <div className="absolute bottom-4 right-6 z-20 text-right">
+           <div className="text-[10px] font-medium text-white/60 flex items-center justify-end gap-2">
+               <button onClick={() => updateHash('/privacy')} className="hover:text-white transition-colors">Kebijakan Privasi</button>
+               <span>•</span>
+               <button onClick={() => updateHash('/terms')} className="hover:text-white transition-colors">Syarat & Ketentuan</button>
+           </div>
+           <div className="flex items-center justify-end gap-2 mt-1">
+               <p className="text-[10px] text-white/40 font-mono">© SEEST SOCIAL 2025</p>
+               <span className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-[8px] font-bold text-white/70">BETA EXPERIMENT</span>
+           </div>
       </div>
 
     </div>

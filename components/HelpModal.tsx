@@ -63,8 +63,15 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
-        className="bg-white dark:bg-slate-800 w-full max-w-4xl h-[80vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row"
+        className="bg-white dark:bg-slate-800 w-full max-w-4xl h-[80vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative"
       >
+        <button 
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-gray-400 transition-colors z-50"
+        >
+            <X size={20} />
+        </button>
+
         {/* Sidebar (Topics) */}
         <div className="w-full md:w-1/3 bg-gray-50 dark:bg-slate-900 border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-700 flex flex-col">
             <div className="p-6 border-b border-gray-200 dark:border-slate-700">
@@ -104,13 +111,6 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col relative">
-             <button 
-                onClick={onClose}
-                className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-gray-400 transition-colors z-10"
-            >
-                <X size={20} />
-            </button>
-
             <div className="flex-grow overflow-y-auto p-8 md:p-12 custom-scrollbar">
                 <motion.div
                     key={activeTopic}
