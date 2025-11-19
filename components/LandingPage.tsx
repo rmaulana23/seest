@@ -311,7 +311,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
                    <h2 className="text-5xl font-black mb-2 tracking-tighter drop-shadow-sm">
                      SEEST<br/>SOCIAL
                    </h2>
-                   <p className="text-sm font-medium tracking-widest opacity-90">Capture, Post, Gone.</p>
+                   <p className="text-sm font-medium tracking-widest opacity-90">Ephemeral Status</p>
                </div>
 
                <div className="space-y-4">
