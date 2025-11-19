@@ -147,7 +147,7 @@ export const useUsers = () => {
      } catch(e) { console.error(e); }
   }, [currentAuthId, fetchData]);
   
-  const updateUserProfile = useCallback(async (userId: string, updates: { bio: string, currentActivity: Activity, username?: string }): Promise<{error?: string}> => {
+  const updateUserProfile = useCallback(async (userId: string, updates: { bio: string, currentActivity: Activity, username?: string, avatar?: string }): Promise<{error?: string}> => {
     if (userId !== currentAuthId) return { error: 'Unauthorized' };
     
     const currentUser = users.find(u => u.id === userId);
@@ -156,6 +156,10 @@ export const useUsers = () => {
         current_activity: updates.currentActivity,
         last_seen: new Date().toISOString()
     };
+
+    if (updates.avatar) {
+        updatesPayload.avatar = updates.avatar;
+    }
 
     // Handle Username Change logic
     if (updates.username && currentUser && updates.username !== currentUser.username) {

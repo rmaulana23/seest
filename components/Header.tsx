@@ -23,13 +23,18 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ currentUser, users, onOpenMessages, onNavigateToProfile, activityFilter, onFilterActivity, notifications, onMarkAllRead, hasUnreadNotifications, hasUnreadMessages, onNotificationClick, onCreatePost }) => {
   const { t } = useTranslation();
+  const isAvatarImage = currentUser?.avatar?.startsWith('data:image') || currentUser?.avatar?.startsWith('http');
+
   return (
     <div className="fixed top-0 left-0 right-0 p-4 z-40 bg-gray-100 dark:bg-slate-900">
       <header className="max-w-7xl mx-auto bg-brand-600 text-white rounded-2xl shadow-lg py-3 px-6 flex items-center justify-between gap-4">
         {/* Logo */}
         <div className="flex items-center gap-3 flex-shrink-0">
             <img src="https://i.imgur.com/e00ntr3.jpg" alt="SEEST Logo" className="w-8 h-8 rounded-lg bg-white/10" />
-            <h1 className="text-lg md:text-xl font-bold tracking-wider">SEEST SOCIAL</h1>
+            <div className="flex flex-col justify-center">
+                <h1 className="text-lg md:text-xl font-bold tracking-wider leading-none">SEEST SOCIAL</h1>
+                <p className="text-[10px] text-white/90 font-medium tracking-wide">Capture, Post, Gone.</p>
+            </div>
         </div>
 
         {/* Desktop Search Bar */}
@@ -71,8 +76,8 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, users, onOpenMessag
 
             {/* Shared Profile Icon - HIDDEN ON MOBILE */}
             {currentUser && (
-                <button onClick={onNavigateToProfile} className="hidden md:flex items-center justify-center w-9 h-9 bg-white/20 border-2 border-white/50 rounded-full hover:bg-white/30 transition-colors">
-                <span className="font-bold text-md text-white">{currentUser.avatar}</span>
+                <button onClick={onNavigateToProfile} className="hidden md:flex items-center justify-center w-9 h-9 bg-white/20 border-2 border-white/50 rounded-full hover:bg-white/30 transition-colors overflow-hidden">
+                  {isAvatarImage ? <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover"/> : <span className="font-bold text-md text-white">{currentUser.avatar}</span>}
                 </button>
             )}
         </div>

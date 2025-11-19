@@ -1,31 +1,58 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { User, Activity } from '../types';
 import { useTranslation } from '../contexts/LanguageContext';
-import { X, Save, AlertCircle } from 'lucide-react';
+import { X, Save, AlertCircle, Camera, Upload } from 'lucide-react';
 import { ACTIVITIES, ACTIVITY_CONFIG } from '../constants';
 
 interface EditProfileFormProps {
   currentUser: User;
-  onUpdateProfile: (updates: { bio: string, currentActivity: Activity, username?: string }) => Promise<void>;
+  onUpdateProfile: (updates: { bio: string, currentActivity: Activity, username?: string, avatar?: string }) => Promise<void>;
   onClose: () => void;
 }
+
+const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = error => reject(error);
+    });
+};
 
 export const EditProfileForm: React.FC<EditProfileFormProps> = ({ currentUser, onUpdateProfile, onClose }) => {
   const { t } = useTranslation();
   const [bio, setBio] = useState(currentUser.bio || '');
   const [activity, setActivity] = useState<Activity>(currentUser.currentActivity || 'Relaxing');
   const [username, setUsername] = useState(currentUser.username || '');
+  const [avatar, setAvatar] = useState(currentUser.avatar || '');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const bioCharCount = bio.length;
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
   const lastChangeTime = currentUser.lastUsernameChange ? new Date(currentUser.lastUsernameChange).getTime() : 0;
   const timeSinceChange = Date.now() - lastChangeTime;
   const canChangeUsername = timeSinceChange > sevenDaysMs;
   const daysRemaining = Math.ceil((sevenDaysMs - timeSinceChange) / (24 * 60 * 60 * 1000));
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+          if (file.size > 1024 * 1024 * 2) { // 2MB Limit
+              setError("Image too large. Max 2MB.");
+              return;
+          }
+          try {
+              const base64 = await fileToBase64(file);
+              setAvatar(base64);
+          } catch (err) {
+              setError("Failed to process image.");
+          }
+      }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,13 +70,15 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({ currentUser, o
 
     setIsSubmitting(true);
     try {
-        await onUpdateProfile({ bio, currentActivity: activity, username });
+        await onUpdateProfile({ bio, currentActivity: activity, username, avatar });
     } catch (e) {
         setError("Failed to update profile.");
     } finally {
         setIsSubmitting(false);
     }
   };
+
+  const isAvatarImage = avatar.startsWith('data:image') || avatar.startsWith('http');
 
   return (
     <motion.div
@@ -73,6 +102,31 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({ currentUser, o
       )}
 
       <form onSubmit={handleSubmit}>
+        <div className="flex flex-col items-center mb-6">
+            <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                <div className="h-24 w-24 rounded-full bg-gray-100 dark:bg-slate-700 border-4 border-white dark:border-slate-600 shadow-md overflow-hidden flex items-center justify-center text-brand-600 font-bold text-4xl">
+                    {isAvatarImage ? (
+                        <img src={avatar} alt="Avatar Preview" className="w-full h-full object-cover" />
+                    ) : (
+                        avatar
+                    )}
+                </div>
+                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Camera className="text-white" size={24} />
+                </div>
+                <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleFileChange} 
+                    accept="image/png, image/jpeg, image/webp" 
+                    className="hidden" 
+                />
+            </div>
+            <button type="button" onClick={() => fileInputRef.current?.click()} className="mt-2 text-sm font-semibold text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1">
+                <Upload size={14} /> Change Photo
+            </button>
+        </div>
+
         <div className="mb-4">
             <label htmlFor="username" className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2 block">
                 Username

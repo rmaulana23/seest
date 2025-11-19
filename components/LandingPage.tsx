@@ -293,7 +293,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
          <img src="https://imgur.com/e00ntr3.jpg" alt="SEEST Logo" className="w-10 h-10 rounded-xl shadow-lg transform -rotate-6" />
          <div>
              <h1 className="text-lg font-extrabold tracking-widest leading-none">SEEST SOCIAL</h1>
-             <p className="text-[10px] font-medium opacity-80 tracking-[0.2em]">{t('landing.hero.subtitle').toUpperCase()}</p>
+             <p className="text-[10px] font-medium opacity-80 tracking-widest">Capture, Post, Gone.</p>
          </div>
       </div>
 
@@ -311,7 +311,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
                    <h2 className="text-5xl font-black mb-2 tracking-tighter drop-shadow-sm">
                      SEEST<br/>SOCIAL
                    </h2>
-                   <p className="text-sm font-medium tracking-[0.3em] opacity-90">EPHEMERAL STATUS</p>
+                   <p className="text-sm font-medium tracking-widest opacity-90">Capture, Post, Gone.</p>
                </div>
 
                <div className="space-y-4">
@@ -456,13 +456,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ users, onLogin, onRegi
       </div>
       
       {/* Footer */}
-      <div className="absolute bottom-4 right-6 z-20 text-right">
-           <div className="text-[10px] font-medium text-white/60 flex items-center justify-end gap-2">
+      <div className="absolute bottom-20 md:bottom-4 left-0 right-0 md:right-6 z-20 text-center md:text-right px-4">
+           <div className="text-[10px] font-medium text-white/60 flex items-center justify-center md:justify-end gap-2">
                <button onClick={() => updateHash('/privacy')} className="hover:text-white transition-colors">Kebijakan Privasi</button>
                <span>•</span>
                <button onClick={() => updateHash('/terms')} className="hover:text-white transition-colors">Syarat & Ketentuan</button>
            </div>
-           <div className="flex items-center justify-end gap-2 mt-1">
+           <div className="flex items-center justify-center md:justify-end gap-2 mt-1">
                <p className="text-[10px] text-white/40 font-mono">© SEEST SOCIAL 2025</p>
                <span className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-[8px] font-bold text-white/70">BETA EXPERIMENT</span>
            </div>

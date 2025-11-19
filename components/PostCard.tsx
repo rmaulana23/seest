@@ -85,6 +85,7 @@ const ReplySection: React.FC<{
     const { t } = useTranslation();
     const [replyText, setReplyText] = useState('');
     const currentUser = users.find(u => u.id === currentUserId);
+    const currentUserAvatarIsImage = currentUser?.avatar?.startsWith('data:image') || currentUser?.avatar?.startsWith('http');
 
     const handleReplySubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -107,11 +108,12 @@ const ReplySection: React.FC<{
                         // Fallback if user not loaded yet
                         const userName = user ? (user.id === currentUserId ? t('post.user.you') : user.name) : 'User';
                         const userAvatar = user ? user.avatar : '?';
+                        const isImage = userAvatar.startsWith('data:image') || userAvatar.startsWith('http');
 
                         return (
                             <div key={index} className="flex items-start gap-2">
-                                <button onClick={() => user && onViewProfile(user.id)} className="h-7 w-7 mt-0.5 rounded-full bg-white border border-brand-600 flex items-center justify-center text-brand-600 font-bold text-xs flex-shrink-0">
-                                    {userAvatar}
+                                <button onClick={() => user && onViewProfile(user.id)} className="h-7 w-7 mt-0.5 rounded-full bg-white border border-brand-600 flex items-center justify-center text-brand-600 font-bold text-xs flex-shrink-0 overflow-hidden">
+                                    {isImage ? <img src={userAvatar} alt={userName} className="w-full h-full object-cover"/> : userAvatar}
                                 </button>
                                 <div className="bg-gray-50 dark:bg-slate-700/50 rounded-r-xl rounded-bl-xl p-2 text-sm">
                                     <span className="font-bold text-gray-800 dark:text-gray-200 text-xs block mb-0.5">@{userName}</span>
@@ -130,8 +132,8 @@ const ReplySection: React.FC<{
                     exit={{ opacity: 0, y: 10 }}
                     className="flex items-center gap-2 pt-2 border-t border-gray-100 dark:border-slate-700"
                 >
-                    <div className="h-8 w-8 rounded-full bg-white border-2 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-xs flex-shrink-0">
-                        {currentUser?.avatar || '?'}
+                    <div className="h-8 w-8 rounded-full bg-white border-2 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-xs flex-shrink-0 overflow-hidden">
+                         {currentUserAvatarIsImage && currentUser ? <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover"/> : (currentUser?.avatar || '?')}
                     </div>
                     <form onSubmit={handleReplySubmit} className="flex-grow flex items-center gap-2">
                         <input 
@@ -175,6 +177,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, users, currentUserId, 
   const userName = post.userId === 'anonymous' ? t('post.user.anonymous') : (post.userId === currentUserId ? t('post.user.you') : postUser.name);
   const expiryHours = getExpiryHours(post.createdAt);
   const commentsCount = post.comments ? post.comments.length : 0;
+  const isAvatarImage = postUser.avatar?.startsWith('data:image') || postUser.avatar?.startsWith('http');
 
   const aspectRatioClass = post.aspectRatio === 'portrait' ? 'aspect-[9/16]' : 'aspect-video';
   
@@ -212,9 +215,9 @@ export const PostCard: React.FC<PostCardProps> = ({ post, users, currentUserId, 
         <div className="flex items-center gap-3">
           <button 
             onClick={() => post.userId !== 'anonymous' && onViewProfile(postUser.id)} 
-            className={`h-12 w-12 rounded-full bg-white border-2 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-xl flex-shrink-0 ${post.userId === 'anonymous' ? 'cursor-default' : ''}`}
+            className={`h-12 w-12 rounded-full bg-white border-2 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-xl flex-shrink-0 overflow-hidden ${post.userId === 'anonymous' ? 'cursor-default' : ''}`}
           >
-             {post.postType === 'ask' ? <HelpCircle size={24} /> : postUser.avatar}
+             {post.postType === 'ask' ? <HelpCircle size={24} /> : (isAvatarImage ? <img src={postUser.avatar} alt={postUser.name} className="w-full h-full object-cover" /> : postUser.avatar)}
           </button>
           <div>
             <div className="flex items-center gap-2">
@@ -384,10 +387,12 @@ export const PostCard: React.FC<PostCardProps> = ({ post, users, currentUserId, 
                   <div className="p-4 space-y-3">
                        {post.comments && post.comments.map(comment => {
                            const user = users.find(u => u.id === comment.userId);
+                           const commentUserAvatarIsImage = user?.avatar?.startsWith('data:image') || user?.avatar?.startsWith('http');
+
                            return (
                                <div key={comment.id} className="flex items-start gap-2.5">
-                                   <button onClick={() => user && onViewProfile(user.id)} className="h-8 w-8 rounded-full bg-white border border-brand-200 flex-shrink-0 flex items-center justify-center text-brand-600 font-bold text-xs">
-                                        {user ? user.avatar : '?'}
+                                   <button onClick={() => user && onViewProfile(user.id)} className="h-8 w-8 rounded-full bg-white border border-brand-200 flex-shrink-0 flex items-center justify-center text-brand-600 font-bold text-xs overflow-hidden">
+                                        {commentUserAvatarIsImage && user ? <img src={user.avatar} alt={user.name} className="w-full h-full object-cover"/> : (user?.avatar || '?')}
                                    </button>
                                    <div className="bg-white dark:bg-slate-700 p-2.5 rounded-2xl rounded-tl-none shadow-sm">
                                        <div className="flex items-baseline gap-2 mb-0.5">

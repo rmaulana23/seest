@@ -47,6 +47,8 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({ activePage, setPage, c
     return liveEvents.some(event => event.creatorId === currentUser.id);
   }, [liveEvents, currentUser]);
 
+  const isAvatarImage = currentUser?.avatar?.startsWith('data:image') || currentUser?.avatar?.startsWith('http');
+
   return (
     <aside className="w-full md:w-64 lg:w-72 p-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-brand-200/50 dark:border-slate-700/50 sticky top-28 h-[calc(100vh-8rem)] rounded-2xl flex-col hidden md:flex overflow-y-auto custom-scrollbar">
       {currentUser && (
@@ -61,8 +63,8 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({ activePage, setPage, c
           }`}
           aria-label={t('nav.profile')}
         >
-          <div className="h-12 w-12 rounded-full bg-white border-2 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-xl flex-shrink-0">
-            {currentUser.avatar}
+          <div className="h-12 w-12 rounded-full bg-white border-2 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-xl flex-shrink-0 overflow-hidden">
+            {isAvatarImage ? <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover"/> : currentUser.avatar}
           </div>
           <div>
             <div className="font-semibold text-gray-800 dark:text-gray-100">@{userHandle}</div>

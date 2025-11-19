@@ -109,6 +109,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const postsToRender = activeTab === 'stories' ? userPosts : userSavedPosts;
   const isFeedEmpty = postsToRender.length === 0;
 
+  const isAvatarImage = profileUser.avatar?.startsWith('data:image') || profileUser.avatar?.startsWith('http');
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -120,8 +122,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         <div className="p-6 sm:p-8">
             <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-6">
                 <div className="relative w-28 h-28 sm:w-32 sm:h-32 flex-shrink-0">
-                  <div className="w-full h-full rounded-full bg-white border-4 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-5xl shadow-lg">
-                    {profileUser.avatar}
+                  <div className="w-full h-full rounded-full bg-white border-4 border-brand-600 flex items-center justify-center text-brand-600 font-bold text-5xl shadow-lg overflow-hidden">
+                    {isAvatarImage ? <img src={profileUser.avatar} alt={profileUser.name} className="w-full h-full object-cover"/> : profileUser.avatar}
                   </div>
                   {lastSeenText === t('time.activeNow') && <span className="absolute bottom-1 right-1 bg-green-500 h-6 w-6 rounded-full border-4 border-white dark:border-slate-800"></span>}
                 </div>
