@@ -417,8 +417,8 @@ export const locales = {
     "theme.light": "Light Mode",
 
     // Right Sidebar
-    "rightSidebar.trending.title": "Trending Activities",
-    "rightSidebar.trending.empty": "No trending activities yet.",
+    "rightSidebar.trending.title": "Popular Activities",
+    "rightSidebar.trending.empty": "No popular activities yet.",
     "rightSidebar.match.title": "Activity Match",
     "rightSidebar.match.yourVibe": "You:",
     "rightSidebar.match.whoIsAlso": "Who's also",
