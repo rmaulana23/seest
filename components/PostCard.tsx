@@ -255,10 +255,12 @@ export const PostCard: React.FC<PostCardProps> = ({ post, users, currentUserId, 
         </div>
       </div>
 
-      {/* Post Content */}
-      <div className="px-5 pb-3">
-        <p className="text-gray-700 dark:text-gray-300">{post.text}</p>
-      </div>
+      {/* Post Content - Hide if background color is present */}
+      {!post.backgroundColor && (
+        <div className="px-5 pb-3">
+          <p className="text-gray-700 dark:text-gray-300">{post.text}</p>
+        </div>
+      )}
 
       {/* Media */}
       {post.media && post.media.length > 0 ? (
